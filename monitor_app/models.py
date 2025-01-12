@@ -1,11 +1,12 @@
 from django.db import models
+from django.utils import timezone
 
 class Location(models.Model):
-    program_name = models.CharField(max_length=255)
-    room_name = models.CharField(max_length=255)
-    floor = models.IntegerField()
-    comment = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
+    program_name = models.CharField(max_length=255, default="default program")
+    room_name = models.CharField(max_length=255, default="default room")
+    floor = models.IntegerField(default=0)
+    comment = models.TextField(default="default comment")
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.program_name} - {self.room_name} - {self.floor}"
