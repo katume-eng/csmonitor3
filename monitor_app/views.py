@@ -15,7 +15,7 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
     valid_time = 30 # minutes
 
     # aglegation of all the data
-    collected_data_filltered = collected_data.filter(timestamp__gte=timezone.now() - timedelta(minutes=valid_time))
+    collected_data_filltered = collected_data.filter(published_at__gte=timezone.now() - timedelta(minutes=valid_time))
     
     for loc in location_data:
         filltered_data_filltered_by_loc = collected_data_filltered.filter(location=loc)
@@ -23,9 +23,9 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
             weighted_sum = 0
             total_weight = 0
             for congestion_level in filltered_data_filltered_by_loc:
-                time_diff = (timezone.now() - congestion_level.timestamp).total_seconds() / 60
+                time_diff = (timezone.now() - congestion_level.published_at).total_seconds() / 60
                 weight = max(0, valid_time - time_diff) / valid_time
-                weighted_sum += congestion_level.level * weight
+                weighted_sum += congestion_level.congestion_level * weight
                 total_weight += weight
             if total_weight > 0:
                 weighted_average = weighted_sum / total_weight
@@ -33,5 +33,8 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
                 congestion_level_obj.level = weighted_average
                 congestion_level_obj.save()
     
-    given_data = {'locations': Location.objects.all(),'collected': Collected.objects.all(),'congestion_level': CongestionLevel.objects.all()}
-    return render(request, 'monitor_app/display.html', given_data)
+    given_data = {
+        'locations': Location.objects.all(),'collected': Collected.objects.all(),
+        'congestion_level': CongestionLevel.objects.all()
+    }
+    return render(request, 'display.html', given_data)

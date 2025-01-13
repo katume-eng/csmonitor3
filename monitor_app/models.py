@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 class Location(models.Model):
     program_name = models.CharField(max_length=255, default="default program")
@@ -13,11 +14,11 @@ class Location(models.Model):
 
 class Collected(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
-    congestion_level = models.IntegerField()
+    congestion_level = models.IntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(100)])
     published_at = models.DateTimeField()
 
     def __str__(self):
-        return f"{self.location.name} - {self.congestion_level.level} - {self.published_at}"
+        return f"{self.location.program_name} - {self.congestion_level} - {self.published_at}"
 
     
 class CongestionLevel(models.Model):
