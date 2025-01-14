@@ -10,7 +10,8 @@ class Location(models.Model):
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"{self.program_name} - {self.room_name} - {self.floor}"
+        # return f"{self.program_name} - {self.room_name} - {self.floor}"
+        return f"{self.program_name} at {self.room_name} on {self.floor} floor"
 
 class Collected(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
@@ -19,7 +20,6 @@ class Collected(models.Model):
 
     def __str__(self):
         return f"{self.location.program_name} - {self.congestion_level} - {self.published_at}"
-
     
 class CongestionLevel(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)

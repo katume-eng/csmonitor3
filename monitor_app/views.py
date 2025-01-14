@@ -3,9 +3,21 @@ from django.http import HttpResponse
 from .models import Location, Collected, CongestionLevel
 from django.utils import timezone
 from datetime import timedelta
+import random
 
 def initial(request):
     return HttpResponse("Hello, World!")
+
+def make_random_data(request):
+    repeat = 10
+    for _ in range(repeat):
+        collected = Collected.objects.create(
+            location=random.choice(Location.objects.all()),
+            congestion_level=random.randint(0,100),
+            published_at=timezone.now()
+            )
+        collected.save()
+    return HttpResponse(f"Created {repeat} random data")
 
 def aggregates_data(request): # 一定時間ごとに集計して、データベースに保存する。各端末が計算するわけではない
     # aglegation of all the data
@@ -34,7 +46,19 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
                 congestion_level_obj.save()
     
     given_data = {
-        'locations': Location.objects.all(),'collected': Collected.objects.all(),
+        'locations': Location.objects.all(),
+        'collected': Collected.objects.all(),
+        'congestion_level': CongestionLevel.objects.all()
+    }
+    return render(request, 'aggre.html', given_data)
+
+def display(request):
+    
+    aggregates_data(request)
+
+    given_data = {
+        'locations': Location.objects.all(),
+        'collected': Collected.objects.all(),
         'congestion_level': CongestionLevel.objects.all()
     }
     return render(request, 'display.html', given_data)

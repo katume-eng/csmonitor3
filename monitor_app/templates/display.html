@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja">
+<!-- The HTML document is set to Japanese language -->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>情報の投影</title>
+    <title>Display Congestion Levels</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
-    <h1>受け取った情報</h1>
-    <p>{{ information }}</p>
+    <h1>Congestion Levels</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Location</th>
+                <th>Congestion Level</th>
+                <th>Reliability</th>
+            </tr>
+        </thead>
+        <tbody>
+            
+        </tbody>
+    </table>
 </body>
 </html>
