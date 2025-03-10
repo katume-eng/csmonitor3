@@ -46,11 +46,7 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
                 congestion_level_obj.save()
 
 def display(request):
-    given_data = {
-        'locations': Location.objects.all(),
-        'collected': Collected.objects.all(),
-        'congestion_level': CongestionLevel.objects.all()
-    }
+    congestion_levels = CongestionLevel.objects.select_related('location').all()
     # templates/display/index.htmlなら
     # 'display.index.html
-    return render(request, 'display.html', given_data)
+    return render(request, 'display.html', {'congestion_level': congestion_levels})

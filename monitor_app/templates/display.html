@@ -30,7 +30,13 @@
             </tr>
         </thead>
         <tbody>
-            
+            {% for location in congestion_level %}
+                <tr>
+                    <td>{{ location.location.program_name }}</td>
+                    <td>{{ location.level }}</td>
+                    <td>{{ location.reliability }}</td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
 </body>
