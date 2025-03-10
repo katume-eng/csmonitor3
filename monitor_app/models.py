@@ -17,7 +17,7 @@ class Location(models.Model):
 class Collected(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
     congestion_level = models.IntegerField(default=0, validators=[MinValueValidator(1), MaxValueValidator(100)])
-    published_at = models.DateTimeField()
+    published_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f"{self.location.program_name} - {self.congestion_level} - {self.published_at}"
@@ -26,3 +26,8 @@ class Collected(models.Model):
 class CongestionLevel(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
     level = models.IntegerField(default=0)
+    last_update_at = models.DateTimeField(default=timezone.now)
+    reliability = models.IntegerField(default=404)
+
+    def __str__(self):
+        return f"{self.location.program_name} - {self.level} - {self.reliability}"
