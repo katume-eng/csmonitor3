@@ -51,4 +51,6 @@ def display(request):
         'collected': Collected.objects.all(),
         'congestion_level': CongestionLevel.objects.all()
     }
+    # templates/display/index.htmlなら
+    # 'display.index.html
     return render(request, 'display.html', given_data)
