@@ -77,6 +77,9 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = 'static/'
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# staticfiles setting
+STATIC_URL = 'static/'
+STATICFILES_URLS = [BASE_DIR / "static"] # 共通の静的ファイルのURL
+STATIC_ROOT = BASE_DIR / "staticfiles"
