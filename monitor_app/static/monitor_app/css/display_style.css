@@ -1,0 +1,70 @@
+/* 全体レイアウト */
+body {
+    font-family: Arial, sans-serif;
+    background: #f0f0f0;
+    margin: 0;
+    padding: 20px;
+  }
+  
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* カードコンテナ：カードを横並び＆自動スクロール対応 */
+  .card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    max-height: 80vh;   /* 高さを制限して自動スクロール */
+    overflow-y: auto;
+    padding: 10px;
+  }
+  
+  /* カードスタイル */
+  .card {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 15px;
+    width: 250px;
+    transition: transform 0.3s;
+  }
+  
+  /* ホバー時に拡大 */
+  .card:hover {
+    transform: scale(1.05);
+  }
+  
+  /* 各カード内のテキストスタイル */
+  .card .location {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  
+  .card .congestion {
+    font-size: 1.1em;
+    margin-bottom: 10px;
+  }
+  
+  .card .program {
+    font-size: 0.9em;
+    color: #555;
+  }
+  
+  /* 混雑度による色分け */
+  /* ※カードに付与するクラス名を congestion level に合わせて動的に設定してください */
+  .card.low {
+    border-left: 6px solid #4CAF50; /* 緑：混雑度低 */
+  }
+  
+  .card.medium {
+    border-left: 6px solid #FFC107; /* 黄：混雑度中 */
+  }
+  
+  .card.high {
+    border-left: 6px solid #F44336; /* 赤：混雑度高 */
+  }
+  
