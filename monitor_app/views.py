@@ -4,6 +4,15 @@ from .models import Location, Collected, CongestionLevel
 from django.utils import timezone
 from datetime import timedelta
 import random
+from django.views.generic import CreateView
+from .forms import CongestionForm
+from django.urls import reverse_lazy
+
+class DataCreate(CreateView):
+    model = Collected
+    form_class = CongestionForm
+    template_name = "con_form.html"  # 任意のテンプレート名でOK
+    success_url = reverse_lazy("display")  # 登録完了後の遷移先（URL名は適宜変更）
 
 def initial(request):
     return HttpResponse("Hello, World!")

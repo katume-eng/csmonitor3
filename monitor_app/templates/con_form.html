@@ -1,0 +1,15 @@
+<!-- templates/collected_form.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>混雑データの登録</title>
+</head>
+<body>
+    <h1>混雑データを入力</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">登録</button>
+    </form>
+</body>
+</html>
