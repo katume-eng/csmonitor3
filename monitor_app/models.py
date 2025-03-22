@@ -30,4 +30,4 @@ class CongestionLevel(models.Model):
     reliability = models.IntegerField(default=404)
 
     def __str__(self):
-        return f"{self.location.program_name} - {self.level} - {self.reliability}"
+        return f"{self.location.program_name} - {self.level}level - {self.reliability}の信頼度"
