@@ -53,9 +53,17 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
                 congestion_level_obj, created = CongestionLevel.objects.get_or_create(location=loc)
                 congestion_level_obj.level = weighted_average
                 congestion_level_obj.save()
+    return HttpResponse("finished")
 
 def display(request):
     congestion_levels = CongestionLevel.objects.select_related('location').all()
     # templates/display/index.htmlなら
     # 'display.index.html
     return render(request, 'display.html', {'congestion_level': congestion_levels})
+
+def displayf(request,floor):
+    congestion_levels = CongestionLevel.objects.select_related('location').filter(location__floor=floor)
+    return render(request, 'display.html', {
+        'congestion_level': congestion_levels,
+        'floor':floor,
+    })
