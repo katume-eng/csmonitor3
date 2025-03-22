@@ -3,13 +3,16 @@
 <html>
 <head>
     <title>混雑データの登録</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/con_form_style.css' %}">
+
 </head>
 <body>
     <h1>混雑データを入力</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">登録</button>
+        <button type="submit">混雑状況を見る!</button>
     </form>
 </body>
 </html>
