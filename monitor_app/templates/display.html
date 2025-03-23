@@ -1,26 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja">
-<!-- The HTML document is set to Japanese language -->
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/display_style.css' %}">
-    <title>Display Congestion Levels</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/display_style.css' %}">
+  <title>Display Congestion Levels</title>
 </head>
 <body>
-    <h1>現在の混雑度の集計結果一覧</h1>
-    <table>
-        <div class="card-container">
-            {% for item in congestion_level %}
-              {# 混雑度に応じたクラス（例：item.level が low, medium, high とする）を付与 #}
-              <div class="card {{ item.level }}">
-                <div class="location">{{ item.location.program_name }}</div>
-                <div class="congestion">混雑度：{{ item.level }}</div>
-                <div class="program">企画名：{{ item.program_name }}</div>
+  <h1>現在の混雑度の集計結果一覧</h1>
+
+  <div class="content">
+    {% for floor, items in congestion_level.items %}
+      <div class="floor-section">
+        <h2>{{ floor }}階の企画</h2>
+        <div class="card-row">
+          {% for item in items %}
+            <div class="card {{ item.level }}">
+              <div class="card-program">{{ item.location.program_name }}</div>
+              <div class="card-location">{{ item.location.room_name }}</div>
+              <div class="card-meta">
+                混雑度：{{ item.level }} 信頼度：{{ item.reliability }}
               </div>
-            {% endfor %}
+            </div>
+          {% endfor %}
         </div>
-    </table>
+      </div>
+    {% endfor %}
+  </div>
 </body>
 </html>
