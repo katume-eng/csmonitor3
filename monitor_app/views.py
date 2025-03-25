@@ -60,6 +60,7 @@ def display(request):
     congestion_levels_each_floor = {}
     for floor in range(1,5):
         congestion_levels_each_floor[floor] = CongestionLevel.objects.filter(location__floor=floor)
+ 
     return render(request, 'display.html', {'congestion_level': congestion_levels_each_floor})
 
 def displayf(request,floor):
