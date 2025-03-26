@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse,JsonResponse
 from .models import Location, Collected, CongestionLevel
 from django.utils import timezone
 from datetime import timedelta
@@ -32,7 +32,6 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
     # aglegation of all the data
     collected_data = Collected.objects.all()
     location_data = Location.objects.all()
-    congestion_level_data = CongestionLevel.objects.all()
     valid_time = 30 # minutes
 
     # aglegation of all the data
@@ -40,7 +39,7 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
     
     for loc in location_data:
         filltered_data_filltered_by_loc = collected_data_filltered.filter(location=loc)
-        if filltered_data_filltered_by_loc:
+        if filltered_data_filltered_by_loc.exists():
             weighted_sum = 0
             total_weight = 0
             for congestion_level in filltered_data_filltered_by_loc:
@@ -53,7 +52,7 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
                 congestion_level_obj, created = CongestionLevel.objects.get_or_create(location=loc)
                 congestion_level_obj.level = weighted_average
                 congestion_level_obj.save()
-    return HttpResponse("finished")
+    return render(request,'aggre.html',{})
 
 def display(request):
     congestion_levels = CongestionLevel.objects.select_related('location').all()
