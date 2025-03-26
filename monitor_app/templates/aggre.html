@@ -3,10 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>情報の投影</title>
+    <title>計算</title>
 </head>
 <body>
-    <h1>受け取った情報</h1>
-    <p>{{ information }}</p>
+<h1>HELLOWORLD</h1>
+<script>
+    function fetchData() {
+        return fetch(window.location.href)
+            .then(response => response.text())
+            .then(text => {
+                console.log("取得成功:", text);
+            })
+            .catch(error => {
+                console.error("エラー:", error);
+            });
+    }
+
+    function fetchLoop() {
+        fetchData().finally(() => {
+            setTimeout(fetchLoop, 60000); // ← 前の処理終了から60秒後に次！
+        });
+    }
+
+    window.onload = () => {
+        fetchLoop();
+    };
+</script>
 </body>
 </html>
