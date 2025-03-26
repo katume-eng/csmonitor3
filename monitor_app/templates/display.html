@@ -10,7 +10,7 @@
 <body>
   <h1>現在の混雑度の集計結果一覧</h1>
 
-  <div class="content">
+  <div class="content" id="congestion-content">
     {% for floor, items in congestion_level.items %}
       <div class="floor-section">
         <h2>{{ floor }}階の企画</h2>
@@ -28,6 +28,56 @@
       </div>
     {% endfor %}
   </div>
-  <script src="{% static 'monitor_app/js/display_script.js' %}"></script>
+  <script>
+    function fetchAndUpdate() {
+      fetch('/monitor/display_json/', {
+        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      })
+      .then(response => response.json())
+      .then(data => {
+        const content = document.getElementById('congestion-content');
+        content.innerHTML = ''; // 既存のカードを全部消す（差分だけ変える方法も可）
+  
+        const congestionData = data.data;
+        for (const floor in congestionData) {
+          const section = document.createElement('div');
+          section.className = 'floor-section';
+  
+          const title = document.createElement('h2');
+          title.textContent = `${floor}階の企画`;
+          section.appendChild(title);
+  
+          const row = document.createElement('div');
+          row.className = 'card-row';
+  
+          congestionData[floor].forEach(item => {
+            const card = document.createElement('div');
+            card.className = `card ${item.level}`;
+            card.innerHTML = `
+              <div class="card-program">${item.program_name}</div>
+              <div class="card-location">${item.room_name}</div>
+              <div class="card-meta">混雑度：${item.level} 信頼度：${item.reliability}</div>
+            `;
+
+            card.classList.add('card-updated');
+            card.addEventListener('animationend',()=>{
+              card.classList.remove('card-updated');
+            });
+            
+            row.appendChild(card);
+          });
+  
+          section.appendChild(row);
+          content.appendChild(section);
+        }
+      });
+    }
+  
+    // ページ読み込み後、10秒ごとに更新
+    window.onload = () => {
+      fetchAndUpdate();
+      setInterval(fetchAndUpdate, 10000);
+    };
+  </script>
 </body>
 </html>

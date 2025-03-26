@@ -18,7 +18,7 @@ def initial(request):
     return HttpResponse("Hello, World!")
 
 def make_random_data(request):
-    repeat = 1000
+    repeat = 10
     for _ in range(repeat):
         collected = Collected.objects.create(
             location=random.choice(Location.objects.all()),
@@ -55,12 +55,27 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
     return render(request,'aggre.html',{})
 
 def display(request):
-    congestion_levels = CongestionLevel.objects.select_related('location').all()
     congestion_levels_each_floor = {}
     for floor in range(1,5):
         congestion_levels_each_floor[floor] = CongestionLevel.objects.filter(location__floor=floor)
  
     return render(request, 'display.html', {'congestion_level': congestion_levels_each_floor})
+
+def display_json(request):
+    congestion_level_each_floor_json = {}
+    for floor in range(1,5):
+        congestion_levels = CongestionLevel.objects.filter(location__floor=floor)
+        congestion_level_each_floor_json[str(floor)] = [
+            {
+                "program_name": cl.location.program_name,
+                "room_name": cl.location.room_name,
+                "level": cl.level,
+                "reliability": cl.reliability,
+            }
+            for cl in congestion_levels
+        ]
+    return JsonResponse({"data":congestion_level_each_floor_json})
+
 
 def displayf(request,floor):
     congestion_levels = CongestionLevel.objects.select_related('location').filter(location__floor=floor)

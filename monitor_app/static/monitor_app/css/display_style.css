@@ -98,3 +98,13 @@ h1 {
     box-sizing: border-box;
   }
 }
+
+@keyframes flashUpdate {
+  0%   { background-color: transparent; opacity: 0.3; }
+  50%  { background-color:  rgba(0, 123, 235, 0.5); opacity: 1; }
+  100% { background-color: transparent; }
+}
+
+.card-updated {
+  animation: flashUpdate 1.5s ease-out;
+}
