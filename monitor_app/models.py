@@ -12,7 +12,7 @@ class Location(models.Model):
 
     def __str__(self):
         # return f"{self.program_name} - {self.room_name} - {self.floor}"
-        return f"{self.program_name} at {self.room_name} on {self.floor} floor"
+        return f"{self.program_name} at {self.room_name} on {self.floor} floor - comment = ' {self.comment} '"
 
 class Collected(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
