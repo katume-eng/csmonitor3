@@ -71,6 +71,7 @@ def display_json(request):
                 "room_name": cl.location.room_name,
                 "level": cl.level,
                 "reliability": cl.reliability,
+                "comment":cl.location.comment,
             }
             for cl in congestion_levels
         ]

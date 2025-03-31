@@ -71,6 +71,11 @@ h1 {
   color: #777;
 }
 
+.card-comment {
+  font-size: 0.9em;
+  color: #000000;
+}
+
 /* 色分け */
 .card.low {
   border-left: 6px solid #4CAF50;
