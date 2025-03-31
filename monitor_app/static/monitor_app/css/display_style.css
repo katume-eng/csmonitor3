@@ -101,10 +101,10 @@ h1 {
 
 @keyframes flashUpdate {
   0%   { background-color: transparent; opacity: 0.3; }
-  50%  { background-color:  rgba(0, 123, 235, 0.5); opacity: 1; }
+  50%  { background-color:  rgba(140, 197, 255, 0.585); opacity: 1; }
   100% { background-color: transparent; }
 }
 
 .card-updated {
-  animation: flashUpdate 1.5s ease-out;
+  animation: flashUpdate 0.5s ease-out;
 }

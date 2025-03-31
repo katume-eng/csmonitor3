@@ -13,7 +13,7 @@
   <div class="content" id="congestion-content">
     {% for floor, items in congestion_level.items %}
       <div class="floor-section">
-        <h2>{{ floor }}階の企画</h2>
+        <h2>{{ floor }}階</h2>
         <div class="card-row">
           {% for item in items %}
             <div class="card {{ item.level }}">
@@ -44,7 +44,7 @@
           section.className = 'floor-section';
   
           const title = document.createElement('h2');
-          title.textContent = `${floor}階の企画`;
+          title.textContent = `${floor}階`;
           section.appendChild(title);
   
           const row = document.createElement('div');
@@ -73,10 +73,10 @@
       });
     }
   
-    // ページ読み込み後、10秒ごとに更新
+    // ページ読み込み後、30秒ごとに更新
     window.onload = () => {
       fetchAndUpdate();
-      setInterval(fetchAndUpdate, 10000);
+      setInterval(fetchAndUpdate, 30000);
     };
   </script>
 </body>
