@@ -5,14 +5,102 @@
     <title>混雑データの登録</title>
     {% load static %}
     <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/con_form_style.css' %}">
+    <style>
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
 
+        .card {
+            flex: 1 1 calc(33.333% - 1rem);
+            border: 2px solid #ccc;
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .card:hover {
+            background-color: #f0f0f0;
+        }
+
+        .card.selected {
+            border-color: #007bff;
+            background-color: #e6f0ff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+        }
+
+        .slider-label {
+            margin-bottom: 0.5rem;
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="range"] {
+            width: 100%;
+        }
+
+        #submit-btn {
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            background-color: #007bff;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
     <h1>混雑データを入力</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">混雑状況を見る!</button>
+
+        <h2>場所を選んでください</h2>
+        <div class="card-container" id="placeCards">
+            {% for location in form.fields.location.queryset %}
+                <div class="card" data-value="{{ location.id }}">
+                    <strong>{{ location.program_name }}</strong><br>
+                    {{ location.room_name }}（{{ location.floor }}F）<br>
+                    <small>{{ location.comment }}</small>
+                </div>
+            {% endfor %}
+        </div>
+        <input type="hidden" name="location" id="placeInput">
+
+        <h2>混雑度を選んでください</h2>
+        <label class="slider-label" for="crowdSlider">混雑度: <span id="sliderValue">50</span></label>
+        <input type="range" id="crowdSlider" name="congestion_level" min="0" max="100" value="50">
+
+        <button id="submit-btn" type="submit">混雑状況を見る!</button>
     </form>
+
+    <script>
+        const cards = document.querySelectorAll('.card');
+        const placeInput = document.getElementById('placeInput');
+        const slider = document.getElementById('crowdSlider');
+        const sliderValue = document.getElementById('sliderValue');
+
+        cards.forEach(card => {
+            card.addEventListener('click', () => {
+                cards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                placeInput.value = card.dataset.value;
+            });
+        });
+
+        slider.addEventListener('input', () => {
+            sliderValue.textContent = slider.value;
+        });
+    </script>
 </body>
 </html>
