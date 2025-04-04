@@ -7,34 +7,32 @@
   <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/display_style.css' %}">
   <title>Display Congestion Levels</title>
 </head>
-<body>
+<body data-floor-given="{{ floor_given }}">
   <h1>現在の混雑度の集計結果一覧</h1>
-
-
-
-  
-
   <div class="content" id="congestion-content">
     {% for floor, items in congestion_level.items %}
-      <div class="floor-section">
-        <h2>{{ floor }}階</h2>
-        <div class="card-row">
-          {% for item in items %}
-            <div class="card {{ item.level }}">
-              <div class="card-program">{{ item.location.program_name }}</div>
-              <div class="card-location">{{ item.location.room_name }}</div>
-              <div class="card-meta">
-                混雑度：{{ item.level }} 信頼度：{{ item.reliability }}
+      {% if floor_given == 0 or floor == floor_given %}
+        <div class="floor-section">
+          <h2>{{ floor }}階</h2>
+          <div class="card-row">
+            {% for item in items %}
+              <div class="card {{ item.level }}">
+                <div class="card-program">{{ item.location.program_name }}</div>
+                <div class="card-location">{{ item.location.room_name }}</div>
+                <div class="card-meta">
+                  混雑度：{{ item.level }} 信頼度：{{ item.reliability }}
+                </div>
+                <div class="card-comment">{{ item.location.comment }}</div>
               </div>
-              <div class="card-comment">{{ item.location.comment }}</div>
-            </div>
-          {% endfor %}
+            {% endfor %}
+          </div>
         </div>
-      </div>
+      {% endif %}
     {% endfor %}
   </div>
   <script>
     function fetchAndUpdate() {
+      const floorGiven = parseInt(document.body.dataset.floorGiven); // 追加！
       fetch('/monitor/display_json/', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
@@ -45,6 +43,7 @@
   
         const congestionData = data.data;
         for (const floor in congestionData) {
+          if (floorGiven !== 0 && parseInt(floor) !== floorGiven) continue; // ← 追加！
           const section = document.createElement('div');
           section.className = 'floor-section';
   

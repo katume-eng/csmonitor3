@@ -54,12 +54,12 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
                 congestion_level_obj.save()
     return render(request,'aggre.html',{})
 
-def display(request):
+def display(request,floor_given):
     congestion_levels_each_floor = {}
     for floor in range(1,5):
         congestion_levels_each_floor[floor] = CongestionLevel.objects.filter(location__floor=floor)
  
-    return render(request, 'display.html', {'congestion_level': congestion_levels_each_floor})
+    return render(request, 'display.html', {'congestion_level': congestion_levels_each_floor,'floor_given':floor_given})
 
 def display_json(request):
     congestion_level_each_floor_json = {}
