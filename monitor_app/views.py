@@ -12,7 +12,7 @@ class DataCreate(CreateView):
     model = Collected
     form_class = CongestionForm
     template_name = "con_form.html"  # 任意のテンプレート名でOK
-    success_url = reverse_lazy("display")  # 登録完了後の遷移先（URL名は適宜変更）
+    success_url = "display/0/"  # 登録完了後の遷移先（URL名は適宜変更）
 
 def initial(request):
     return HttpResponse("Hello, World!")
@@ -33,6 +33,7 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
     collected_data = Collected.objects.all()
     location_data = Location.objects.all()
     valid_time = 30 # minutes
+
 
     # aglegation of all the data
     collected_data_filltered = collected_data.filter(published_at__gte=timezone.now() - timedelta(minutes=valid_time))
