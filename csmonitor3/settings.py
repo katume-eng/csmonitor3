@@ -55,6 +55,18 @@ DATABASES = {
     }
 }
 
+# posgresql's settings
+#DATABASES = {
+#    'default': {
+#        "ENGINE": "django.db.backends.postgresql_psycopg2",
+#        "NAME": "name", #ご自身が作成したデータベース名
+#        "USER": "user", #ご自身が設定したユーザー名
+#        "PASSWORD": "password",#ご自身が設定したパスワード
+#        "HOST": "localhost",
+#        "PORT": "5432",
+#    }
+#}
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
