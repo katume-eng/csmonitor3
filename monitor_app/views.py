@@ -28,32 +28,44 @@ def make_random_data(request):
         collected.save()
     return HttpResponse(f"Created {repeat} random data")
 
+def weighted_average_congestion(queryset, valid_time):
+    """
+    混雑度の重み付き平均を計算する。新しいデータほど重みが大きい。
+    :param queryset: 対象のCollectedクエリセット
+    :param valid_time: 有効時間（分）
+    :return: 重み付き平均値（float）
+    """
+    weighted_sum = 0
+    total_weight = 0
+    now = timezone.now()
+    for congestion in queryset:
+        time_diff = (now - congestion.published_at).total_seconds() / 60
+        weight = max(0, valid_time - time_diff) / valid_time
+        weighted_sum += congestion.congestion_level * weight
+        total_weight += weight
+    if total_weight > 0:
+        return weighted_sum / total_weight
+    return None
+
+
 def aggregates_data(request): # 一定時間ごとに集計して、データベースに保存する。各端末が計算するわけではない
-    # aglegation of all the data
+    """
+    一定時間ごとに集計して、データベースに保存する。各端末が計算するわけではない
+    """
     collected_data = Collected.objects.all()
     location_data = Location.objects.all()
-    valid_time = 30 # minutes
+    valid_time = 30  # minutes
+    collected_data_filtered = collected_data.filter(published_at__gte=timezone.now() - timedelta(minutes=valid_time))
 
-
-    # aglegation of all the data
-    collected_data_filltered = collected_data.filter(published_at__gte=timezone.now() - timedelta(minutes=valid_time))
-    
     for loc in location_data:
-        filltered_data_filltered_by_loc = collected_data_filltered.filter(location=loc)
-        if filltered_data_filltered_by_loc.exists():
-            weighted_sum = 0
-            total_weight = 0
-            for congestion_level in filltered_data_filltered_by_loc:
-                time_diff = (timezone.now() - congestion_level.published_at).total_seconds() / 60
-                weight = max(0, valid_time - time_diff) / valid_time
-                weighted_sum += congestion_level.congestion_level * weight
-                total_weight += weight
-            if total_weight > 0:
-                weighted_average = weighted_sum / total_weight
+        filtered_by_loc = collected_data_filtered.filter(location=loc)
+        if filtered_by_loc.exists():
+            avg = weighted_average_congestion(filtered_by_loc, valid_time)
+            if avg is not None:
                 congestion_level_obj, created = CongestionLevel.objects.get_or_create(location=loc)
-                congestion_level_obj.level = weighted_average
+                congestion_level_obj.level = avg
                 congestion_level_obj.save()
-    return render(request,'aggre.html',{})
+    return render(request, 'aggre.html', {})
 
 def display(request,floor_given):
     congestion_levels_each_floor = {}
