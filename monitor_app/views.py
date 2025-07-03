@@ -18,7 +18,7 @@ def initial(request):
     return HttpResponse("Hello, World!")
 
 def make_random_data(request):
-    repeat = 10
+    repeat = 1000  # 生成するデータの数
     for _ in range(repeat):
         collected = Collected.objects.create(
             location=random.choice(Location.objects.all()),
