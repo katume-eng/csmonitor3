@@ -89,11 +89,3 @@ def display_json(request):
             for cl in congestion_levels
         ]
     return JsonResponse({"data":congestion_level_each_floor_json})
-
-
-def displayf(request,floor):
-    congestion_levels = CongestionLevel.objects.select_related('location').filter(location__floor=floor)
-    return render(request, 'display.html', {
-        'congestion_level': congestion_levels,
-        'floor':floor,
-    })
