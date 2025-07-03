@@ -77,12 +77,35 @@
         }
       });
     }
-  
-    // ページ読み込み後、30秒ごとに更新
-    window.onload = () => {
-      fetchAndUpdate();
-      setInterval(fetchAndUpdate, 30000);
-    };
+        // 自動スクロールのスクリプト
+    function autoScroll() {
+        const scrollContainer = document.getElementById('congestion-content');
+        let scrollAmount = 0;
+        const scrollStep = 1;
+        const scrollInterval = setInterval(() => {
+            scrollContainer.scrollTop += scrollStep;
+            scrollAmount += scrollStep;
+            if (scrollAmount >= scrollContainer.scrollHeight - scrollContainer.clientHeight) {
+                clearInterval(scrollInterval);
+                setTimeout(() => {
+                    location.reload(); // スクロールが終わったらリロード
+                }, 2500);
+            }
+        }, 23); // スクロールの速度を調整（数字を小さくすると速くなる）
+    }
+
+        // スクロールが必要かどうかチェック
+    function checkScroll() {
+        const scrollContainer = document.getElementById('congestion-content');
+        if (scrollContainer.scrollHeight > scrollContainer.clientHeight) {
+            autoScroll(); // スクロールが必要なら自動スクロールを開始
+        } else {
+            setTimeout(() => {
+                location.reload(); // スクロールが不要なら20秒ごとにリロード
+            }, 10000);
+        }
+    }
+    window.onload = checkScroll;
   </script>
 </body>
 </html>
