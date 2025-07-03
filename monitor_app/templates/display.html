@@ -8,7 +8,7 @@
   <title>Display Congestion Levels</title>
 </head>
 <body data-floor-given="{{ floor_given }}">
-  <h1>現在の混雑度の集計結果一覧</h1>
+  <h1>各階の混雑度はこちら！！</h1>
   <div class="content" id="congestion-content">
     {% for floor, items in congestion_level.items %}
       {% if floor_given == 0 or floor == floor_given %}
