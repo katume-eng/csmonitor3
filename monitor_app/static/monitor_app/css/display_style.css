@@ -3,6 +3,7 @@ body {
   background: #f0f0f0;
   margin: 0;
   padding: 20px;
+  overflow: hidden; /* 自動スクロールのためにオーバーフローを隠す */
 }
 
 h1 {
@@ -13,6 +14,8 @@ h1 {
 .content {
   max-width: 1200px;
   margin: 0 auto;
+  overflow-y: auto; /* 縦スクロールを可能に */
+  height: calc(100vh - 150px); /* スクロールエリアの高さを調整 */
 }
 
 .floor-section {
