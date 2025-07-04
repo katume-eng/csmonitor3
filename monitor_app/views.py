@@ -48,7 +48,7 @@ def weighted_average_congestion(queryset, valid_time):
     return None
 
 
-def aggregates_data(request): # 一定時間ごとに集計して、データベースに保存する。各端末が計算するわけではない
+def aggregates_data(request):
     """
     一定時間ごとに集計して、データベースに保存する。各端末が計算するわけではない
     """
