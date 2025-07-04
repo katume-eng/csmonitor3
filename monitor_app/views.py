@@ -54,7 +54,7 @@ def aggregates_data(request): # 一定時間ごとに集計して、データベ
     """
     collected_data = Collected.objects.all()
     location_data = Location.objects.all()
-    valid_time = 30  # minutes
+    valid_time = 15  # minutes
     collected_data_filtered = collected_data.filter(published_at__gte=timezone.now() - timedelta(minutes=valid_time))
 
     for loc in location_data:
