@@ -72,7 +72,7 @@
               card.classList.remove('card-updated');
             });
 
-            
+
             row.appendChild(card);
           });
   
@@ -109,7 +109,10 @@
             }, 10000);
         }
     }
-    window.onload = checkScroll;
+    window.onload = () => {
+      fetchAndUpdate();
+      checkScroll(); // ページ読み込み時にスクロールチェックを実行
+    };
   </script>
 </body>
 </html>
