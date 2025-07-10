@@ -41,7 +41,7 @@ def weighted_average_congestion(queryset, valid_time):
     for congestion in queryset:
         # time_diffを「分」単位で計算
         time_diff = (now - congestion.published_at).total_seconds() / 60  # ここはそのままでOK
-        weight = max(0, valid_time - time_diff) / valid_time  # 分単位で重みを計算
+        weight = max(0, valid_time - (time_diff*1.5)) / valid_time  # 分単位で重みを計算
         weighted_sum += congestion.congestion_level * weight
         total_weight += weight
     if total_weight > 0:
