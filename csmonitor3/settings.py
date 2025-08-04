@@ -99,5 +99,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # staticfiles setting
 STATIC_URL = 'static/'
-STATICFILES_URLS = [BASE_DIR / "static"] # 共通の静的ファイルのURL
+STATICFILES_DIRS = [BASE_DIR / "static"] # 共通の静的ファイルのURL
 STATIC_ROOT = BASE_DIR / "staticfiles"
