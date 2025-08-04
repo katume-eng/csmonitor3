@@ -8,6 +8,9 @@ from django.views.generic import CreateView
 from .forms import CongestionForm
 from django.urls import reverse_lazy
 
+def index(request):
+    return render(request, 'index.html')
+
 class DataCreate(CreateView):
     model = Collected
     form_class = CongestionForm
