@@ -1,0 +1,27 @@
+databases:
+  - name: django_render_db
+    region: singapore
+    plan: free
+    databaseName: django_render_db
+    user: django_user
+
+services:
+  - type: web
+    name: csmonitor3
+    env: python
+    region: singapore
+    buildCommand: './build.sh'
+    startCommand: 'gunicorn csmonitor3.wsgi:application'
+    plan: free
+    branch: main
+    healthCheckPath: /
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: django_render_db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
+    autoDeploy: true
