@@ -30,12 +30,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+default_dburl = "sqlite:///" + str(BASE_DIR / "db.sqlite3")
+
 ROOT_URLCONF = 'csmonitor3.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / "templates"],  # テンプレートディレクトリのパス
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -54,6 +56,10 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+SUPERUSER_NAME = env("SUPERUSER_NAME")
+SUPERUSER_EMAIL = env("SUPERUSER_EMAIL")
+SUPERUSER_PASSWORD = env("SUPERUSER_PASSWORD")
 
 # posgresql's settings
 #DATABASES = {
