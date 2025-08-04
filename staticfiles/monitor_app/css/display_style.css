@@ -1,0 +1,117 @@
+body {
+  font-family: Arial, sans-serif;
+  background: #f0f0f0;
+  margin: 0;
+  padding: 20px;
+  overflow: hidden; /* 自動スクロールのためにオーバーフローを隠す */
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.content {
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow-y: auto; /* 縦スクロールを可能に */
+  height: calc(100vh - 150px); /* スクロールエリアの高さを調整 */
+}
+
+.floor-section {
+  margin-bottom: 60px;
+  background-color: #ebebeb;
+}
+
+.floor-section h2 {
+  font-size: 1.4em;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  padding-top: 10px;
+  border-top: 5px solid #bee2fc;
+  text-align: center;
+}
+
+/* 横並び */
+.card-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 20px;
+  padding: 10px;
+}
+
+/* カードデザイン */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 15px;
+  width: 220px;
+  transition: transform 0.3s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+}
+
+.card-program {
+  font-size: 1.3em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.card-location {
+  font-size: 1.1em;
+  font-weight: normal;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+.card-meta {
+  font-size: 0.9em;
+  color: #777;
+}
+
+.card-comment {
+  font-size: 0.9em;
+  color: #000000;
+}
+
+/* 色分け */
+.card.low {
+  border-left: 6px solid #4CAF50;
+}
+
+.card.medium {
+  border-left: 6px solid #FFC107;
+}
+
+.card.high {
+  border-left: 6px solid #F44336;
+}
+
+@media (max-width: 600px) {
+  .content {
+    padding: 0 10px;
+  }
+
+  .card-row {
+    padding: 0 10px;
+  }
+
+  .card {
+    width: calc(50% - 20px); /* or width: 48%; */
+    box-sizing: border-box;
+  }
+}
+
+@keyframes flashUpdate {
+  0%   { background-color: transparent; opacity: 0.3; }
+  50%  { background-color:  rgba(140, 197, 255, 0.585); opacity: 1; }
+  100% { background-color: transparent; }
+}
+
+.card-updated {
+  animation: flashUpdate 0.5s ease-out;
+}
