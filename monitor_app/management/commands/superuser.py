@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         if not CustomUser.objects.filter(username=settings.SUPERUSER_NAME).exists():
             CustomUser.objects.create_superuser(
-                username=settings.SUPERUSER_NAME,
+                username=settings.SUPERUSER_USERNAME,
                 email=settings.SUPERUSER_EMAIL,
                 password=settings.SUPERUSER_PASSWORD
             )
