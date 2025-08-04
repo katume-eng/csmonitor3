@@ -57,7 +57,7 @@ DATABASES = {
     }
 }
 
-SUPERUSER_USERNAME = env("DJANGO_SUPERUSER_USERNAME")
+SUPERUSER_NAME = env("DJANGO_SUPERUSER_USERNAME")
 SUPERUSER_EMAIL = env("DJANGO_SUPERUSER_EMAIL")
 SUPERUSER_PASSWORD = env("DJANGO_SUPERUSER_PASSWORD")
 
@@ -99,5 +99,5 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # staticfiles setting
 STATIC_URL = 'static/'
-STATICFILES_DIRS = [BASE_DIR / "static"] # 共通の静的ファイルのURL
+# STATICFILES_DIRS = [BASE_DIR / "static"] # 共通の静的ファイルのURL
 STATIC_ROOT = BASE_DIR / "staticfiles"
