@@ -7,6 +7,9 @@ import random
 from django.views.generic import CreateView
 from .forms import CongestionForm
 from django.urls import reverse_lazy
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import CongestionLevelItemSerializer
 
 def index(request):
     return render(request, 'index.html')
@@ -93,3 +96,28 @@ def display_json(request):
             for cl in congestion_levels
         ]
     return JsonResponse({"data":congestion_level_each_floor_json})
+
+
+@api_view(['GET'])
+def display_json_api(request):
+    # N+1回避
+    qs = (CongestionLevel.objects
+          .select_related('location')
+          .order_by('location__floor', 'location__room_name'))
+
+    # まず「1件＝1行」形式にシリアライズ
+    items = CongestionLevelItemSerializer(qs, many=True).data
+
+    # 目的の形（floorごとの配列）に組み立て直す
+    floors = {}
+    for it in items:
+        key = str(it['floor'])
+        floors.setdefault(key, []).append({
+            "program_name": it["program_name"],
+            "room_name": it["room_name"],
+            "level": it["level"],
+            "reliability": it["reliability"],
+            "comment": it["comment"],
+        })
+
+    return Response({"data": floors})
