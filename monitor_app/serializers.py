@@ -1,6 +1,6 @@
 # monitor_app/serializers.py
 from rest_framework import serializers
-from .models import CongestionLevel
+from .models import CongestionLevel,Collected
 
 class CongestionLevelItemSerializer(serializers.ModelSerializer):
     # Locationの項目を直で出したいので source= で外部キー先を参照
@@ -12,3 +12,8 @@ class CongestionLevelItemSerializer(serializers.ModelSerializer):
     class Meta:
         model  = CongestionLevel
         fields = ['program_name', 'room_name', 'level', 'reliability', 'comment', 'floor']
+
+class CongestionLevelCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Collected
+        fields = ['location', 'congestion_level']
