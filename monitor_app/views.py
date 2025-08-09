@@ -9,22 +9,21 @@ from .forms import CongestionForm
 from django.urls import reverse_lazy
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from .serializers import CongestionLevelItemSerializer
+from .serializers import CongestionLevelItemSerializer, CongestionLevelCreateSerializer
 
 def index(request):
     return render(request, 'index.html')
-
 class DataCreate(CreateView):
     model = Collected
     form_class = CongestionForm
-    template_name = "con_form.html"  # 任意のテンプレート名でOK
-    success_url = "display/0/"  # 登録完了後の遷移先（URL名は適宜変更）
+    template_name = "con_form.html"  
+    success_url = "display/0/"  
 
 def initial(request):
     return HttpResponse("Hello, World!")
 
 def make_random_data(request):
-    repeat = 1000  # 生成するデータの数
+    repeat = 1000  
     for _ in range(repeat):
         collected = Collected.objects.create(
             location=random.choice(Location.objects.all()),
@@ -45,8 +44,7 @@ def weighted_average_congestion(queryset, valid_time):
     total_weight = 0
     now = timezone.now()
     for congestion in queryset:
-        # time_diffを「分」単位で計算
-        time_diff = (now - congestion.published_at).total_seconds() / 60  # ここはそのままでOK
+        time_diff = (now - congestion.published_at).total_seconds() / 60
         weight = max(0, valid_time - (time_diff**(1.25))) / valid_time  # 分単位で重みを計算 重みは1.25乗にしよう
         weighted_sum += congestion.congestion_level * weight
         total_weight += weight
@@ -81,43 +79,31 @@ def display(request,floor_given):
  
     return render(request, 'display.html', {'congestion_level': congestion_levels_each_floor,'floor_given':floor_given})
 
-def display_json(request):
-    congestion_level_each_floor_json = {}
-    for floor in range(1,5):
-        congestion_levels = CongestionLevel.objects.filter(location__floor=floor)
-        congestion_level_each_floor_json[str(floor)] = [
-            {
-                "program_name": cl.location.program_name,
-                "room_name": cl.location.room_name,
-                "level": cl.level,
-                "reliability": cl.reliability,
-                "comment":cl.location.comment,
-            }
-            for cl in congestion_levels
-        ]
-    return JsonResponse({"data":congestion_level_each_floor_json})
-
-
-@api_view(['GET'])
+@api_view(['GET', 'POST'])
 def display_json_api(request):
-    # N+1回避
-    qs = (CongestionLevel.objects
-          .select_related('location')
-          .order_by('location__floor', 'location__room_name'))
+    if request.method == 'GET':
+        qs = (CongestionLevel.objects
+              .select_related('location')
+              .order_by('location__floor', 'location__room_name'))
+        data = CongestionLevelItemSerializer(qs, many=True).data
 
-    # まず「1件＝1行」形式にシリアライズ
-    items = CongestionLevelItemSerializer(qs, many=True).data
+        # 目的の形（floorごとの配列）に組み立て直す
+        floors = {}
+        for it in data:
+            key = str(it['floor'])
+            floors.setdefault(key, []).append({
+                "program_name": it["program_name"],
+                "room_name": it["room_name"],
+                "level": it["level"],
+                "reliability": it["reliability"],
+                "comment": it["comment"],
+            })
 
-    # 目的の形（floorごとの配列）に組み立て直す
-    floors = {}
-    for it in items:
-        key = str(it['floor'])
-        floors.setdefault(key, []).append({
-            "program_name": it["program_name"],
-            "room_name": it["room_name"],
-            "level": it["level"],
-            "reliability": it["reliability"],
-            "comment": it["comment"],
-        })
-
-    return Response({"data": floors})
+        return Response({"data": floors})
+    
+    elif request.method == 'POST':
+        serializer = CongestionLevelCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
