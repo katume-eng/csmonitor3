@@ -33,7 +33,7 @@
   <script>
     function fetchAndUpdate() {
       const floorGiven = parseInt(document.body.dataset.floorGiven); // 追加！
-      fetch('/display_json/', {
+      fetch('/display_json_api/', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => response.json())

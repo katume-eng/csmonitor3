@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form action="/display_json_api/" method="post">
+    {% csrf_token %}
+    <input type="text" name="location" value="1">
+    <input type="number" name="level" value="13">
+    <button type="submit">送信</button>
+</form>
+</body>
+</html>
