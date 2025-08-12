@@ -78,8 +78,14 @@
         <input type="hidden" name="location" id="placeInput">
 
         <h2>混雑度を選んでください</h2>
-        <label class="slider-label" for="crowdSlider">混雑度: <span id="sliderValue">50</span></label>
-        <input type="range" id="crowdSlider" name="congestion_level" min="0" max="100" value="50">
+            <label class="slider-label">混雑度を選択:</label>
+            <div id="crowdRadioGroup" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                <label><input type="radio" name="congestion_level" value="1" required>空いている</label>
+                <label><input type="radio" name="congestion_level" value="2"> 人は少ない</label>
+                <label><input type="radio" name="congestion_level" value="3"> 普通に人がいる</label>
+                <label><input type="radio" name="congestion_level" value="4"> 人は多い</label>
+                <label><input type="radio" name="congestion_level" value="5"> とても混雑している</label>
+            </div>
 
         <button id="submit-btn" type="submit">混雑状況を見る!</button>
     </form>
