@@ -10,25 +10,6 @@
 <body data-floor-given="{{ floor_given }}">
   <h1>各階の混雑度はこちら！！</h1>
   <div class="content" id="congestion-content">
-    {% for floor, items in congestion_level.items %}
-      {% if floor_given == 0 or floor == floor_given %}
-        <div class="floor-section">
-          <h2>{{ floor }}階</h2>
-          <div class="card-row">
-            {% for item in items %}
-              <div class="card {{ item.level }}">
-                <div class="card-program">{{ item.location.program_name }}</div>
-                <div class="card-location">{{ item.location.room_name }}</div>
-                <div class="card-meta">
-                  混雑度：{{ item.level }} 信頼度：{{ item.reliability }}
-                </div>
-                <div class="card-comment">{{ item.location.comment }}</div>
-              </div>
-            {% endfor %}
-          </div>
-        </div>
-      {% endif %}
-    {% endfor %}
   </div>
   <script>
     function fetchAndUpdate() {
@@ -61,7 +42,7 @@
             card.innerHTML = `
               <div class="card-program">${item.program_name}</div>
               <div class="card-location">${item.room_name}</div>
-              <div class="card-meta">混雑度：${item.level} 信頼度：${item.reliability}</div>
+              <div class="card-meta">混雑度：${item.level} データ数：${item.reliability}</div>
               <div class="card-comment">${item.comment}</div>
             `;
 
@@ -79,6 +60,7 @@
           section.appendChild(row);
           content.appendChild(section);
         }
+        checkScroll(); // スクロールが必要かどうかチェック
       });
     }
         // 自動スクロールのスクリプト
@@ -111,7 +93,6 @@
     }
     window.onload = () => {
       fetchAndUpdate();
-      checkScroll(); // ページ読み込み時にスクロールチェックを実行
     };
   </script>
 </body>
