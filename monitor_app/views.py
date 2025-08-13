@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from .models import Location, Collected, CongestionLevel
 from django.utils import timezone
@@ -23,11 +23,11 @@ def initial(request):
     return HttpResponse("Hello, World!")
 
 def make_random_data(request):
-    repeat = 1000  
+    repeat = 100
     for _ in range(repeat):
         collected = Collected.objects.create(
             location=random.choice(Location.objects.all()),
-            congestion_level=random.randint(0,100),
+            congestion_level=random.randint(0,5),
             published_at=timezone.now()
             )
         collected.save()
@@ -64,11 +64,13 @@ def aggregates_data(request):
 
     for loc in location_data:
         filtered_by_loc = collected_data_filtered.filter(location=loc)
+        num_filtered_by_loc = filtered_by_loc.count()
         if filtered_by_loc.exists():
             avg = weighted_average_congestion(filtered_by_loc, valid_time)
             if avg is not None:
                 congestion_level_obj, created = CongestionLevel.objects.get_or_create(location=loc)
                 congestion_level_obj.level = avg
+                congestion_level_obj.reliability = num_filtered_by_loc
                 congestion_level_obj.save()
     return render(request, 'aggre.html', {})
 
@@ -76,6 +78,9 @@ def display(request,floor_given):
     congestion_levels_each_floor = {}
     for floor in range(1,5):
         congestion_levels_each_floor[floor] = CongestionLevel.objects.filter(location__floor=floor)
+
+    if floor_given == 1729:
+        return render(request, 'display_user.html',{'congestion_level': congestion_levels_each_floor,'floor_given':0})
  
     return render(request, 'display.html', {'congestion_level': congestion_levels_each_floor,'floor_given':floor_given})
 
@@ -107,3 +112,23 @@ def display_json_api(request):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+def con_form_view(request):
+    form = CongestionForm()
+    form.fields['location'].queryset = Location.objects.all().order_by('floor', 'room_name')
+
+    if request.method == 'POST':
+        form = CongestionForm(request.POST)
+        if form.is_valid():
+            congestion = form.save(commit=False)
+            congestion.published_at = timezone.now()
+            congestion.save()
+            return redirect('display', floor_given=1729)
+
+    elif request.method == 'GET':
+        locations = Location.objects.all().order_by('floor', 'room_name')
+        floors = {}
+        for loc in locations:
+            floors.setdefault(loc.floor, []).append(loc)
+        return render(request, 'con_form.html', {'form': form})
+    return render(request, 'con_form.html', {'form': form})
