@@ -27,7 +27,7 @@ class CongestionLevel(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
     level = models.IntegerField(default=0)
     last_update_at = models.DateTimeField(default=timezone.now)
-    reliability = models.IntegerField(default=404)
+    reliability = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.location.program_name} - {self.level}level - {self.reliability}の信頼度"
