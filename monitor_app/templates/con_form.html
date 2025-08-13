@@ -58,6 +58,17 @@
         #submit-btn:hover {
             background-color: #0056b3;
         }
+
+        .floor-section {
+            margin-bottom: 2rem;
+        }
+
+        .floor-section h3 {
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -66,15 +77,21 @@
         {% csrf_token %}
 
         <h2>場所を選んでください</h2>
-        <div class="card-container" id="placeCards">
-            {% for location in form.fields.location.queryset %}
-                <div class="card" data-value="{{ location.id }}">
-                    <strong>{{ location.program_name }}</strong><br>
-                    {{ location.room_name }}（{{ location.floor }}F）<br>
-                    <small>{{ location.comment }}</small>
+        {% regroup form.fields.location.queryset by floor as floor_list %}
+        {% for floor_group in floor_list %}
+            <div class="floor-section">
+                <h3>{{ floor_group.grouper }}階</h3>
+                <div class="card-container">
+                    {% for location in floor_group.list %}
+                        <div class="card" data-value="{{ location.id }}">
+                            <strong>{{ location.program_name }}</strong><br>
+                            {{ location.room_name }}（{{ location.floor }}F）<br>
+                            <small>{{ location.comment }}</small>
+                        </div>
+                    {% endfor %}
                 </div>
-            {% endfor %}
-        </div>
+            </div>
+        {% endfor %}
         <input type="hidden" name="location" id="placeInput">
 
         <h2>混雑度を選んでください</h2>

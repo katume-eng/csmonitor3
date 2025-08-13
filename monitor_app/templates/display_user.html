@@ -5,26 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   {% load static %}
   <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/display_style.css' %}">
-  <title>Display Congestion Levels</title>
+  <title>Display Congestion Levels for user</title>
 </head>
 <body data-floor-given="{{ floor_given }}">
-  <h1>混雑度はこちら！！</h1>
+  <h1>各階の混雑度はこちら！！</h1>
+  <a href="{% url 'vote' %}" class="btn-latest-data"><h2>-------最新のデータを見る-------</h2></a>
   <div class="content" id="congestion-content">
   </div>
   <script>
     function fetchAndUpdate() {
-      const floorGiven = parseInt(document.body.dataset.floorGiven); // 追加！
+      const floorGiven = parseInt(document.body.dataset.floorGiven);
       fetch('/display_json_api/', {
         headers: { 'X-Requested-With': 'XMLHttpRequest' }
       })
       .then(response => response.json())
       .then(data => {
         const content = document.getElementById('congestion-content');
-        content.innerHTML = ''; // 既存のカードを全部消す（差分だけ変える方法も可）
+        content.innerHTML = '';
   
         const congestionData = data.data;
         for (const floor in congestionData) {
-          if (floorGiven !== 0 && parseInt(floor) !== floorGiven) continue; // ← 追加！
+          if (floorGiven !== 0 && parseInt(floor) !== floorGiven) continue;
           const section = document.createElement('div');
           section.className = 'floor-section';
   
@@ -42,7 +43,8 @@
             card.innerHTML = `
               <div class="card-program">${item.program_name}</div>
               <div class="card-location">${item.room_name}</div>
-              <div class="card-meta">混雑度：${item.level} データ数：${item.reliability}</div>
+              <div class="card-level">混雑度：${item.level}</div>
+              <div class="card-data">データ数：${item.reliability}</div>
             `;
 
             //console.log("item.level =", item.level);////
@@ -59,36 +61,7 @@
           section.appendChild(row);
           content.appendChild(section);
         }
-        checkScroll(); // スクロールが必要かどうかチェック
       });
-    }
-        // 自動スクロールのスクリプト
-    function autoScroll() {
-        const scrollContainer = document.getElementById('congestion-content');
-        let scrollAmount = 0;
-        const scrollStep = 1;
-        const scrollInterval = setInterval(() => {
-            scrollContainer.scrollTop += scrollStep;
-            scrollAmount += scrollStep;
-            if (scrollAmount >= scrollContainer.scrollHeight - scrollContainer.clientHeight) {
-                clearInterval(scrollInterval);
-                setTimeout(() => {
-                    location.reload(); // スクロールが終わったらリロード
-                }, 2500);
-            }
-        }, 23); // スクロールの速度を調整（数字を小さくすると速くなる）
-    }
-
-        // スクロールが必要かどうかチェック
-    function checkScroll() {
-        const scrollContainer = document.getElementById('congestion-content');
-        if (scrollContainer.scrollHeight > scrollContainer.clientHeight) {
-            autoScroll(); // スクロールが必要なら自動スクロールを開始
-        } else {
-            setTimeout(() => {
-                location.reload(); // スクロールが不要なら20秒ごとにリロード
-            }, 10000);
-        }
     }
     window.onload = () => {
       fetchAndUpdate();
