@@ -7,8 +7,8 @@ env.read_env('.env')
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
-DEBUG = env('DEBUG')
-ALLOWED_HOSTS = ['*']
+DEBUG = env.bool('DEBUG', default=False)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
 
 INSTALLED_APPS = [
     'monitor_app.apps.MonitorAppConfig',
@@ -32,8 +32,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-default_dburl = "sqlite:///" + str(BASE_DIR / "db.sqlite3")
-
 ROOT_URLCONF = 'csmonitor3.urls'
 
 TEMPLATES = [
@@ -52,28 +50,17 @@ TEMPLATES = [
     },
 ]
 WSGI_APPLICATION = 'csmonitor3.wsgi.application'
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': env.db(
+        'DATABASE_URL',
+        default='postgres://postgres@localhost:5432/csmonitor_db'
+    )
 }
 
 SUPERUSER_NAME = env("DJANGO_SUPERUSER_USERNAME")
 SUPERUSER_EMAIL = env("DJANGO_SUPERUSER_EMAIL")
 SUPERUSER_PASSWORD = env("DJANGO_SUPERUSER_PASSWORD")
-
-# posgresql's settings
-#DATABASES = {
-#    'default': {
-#        "ENGINE": "django.db.backends.postgresql_psycopg2",
-#        "NAME": "name", #ご自身が作成したデータベース名
-#        "USER": "user", #ご自身が設定したユーザー名
-#        "PASSWORD": "password",#ご自身が設定したパスワード
-#        "HOST": "localhost",
-#        "PORT": "5432",
-#    }
-#}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
