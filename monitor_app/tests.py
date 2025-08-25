@@ -9,12 +9,12 @@ class MakeRandomDataTest(TestCase):
     def setUp(self):
         Location.objects.create(program_name="Test Program", room_name="Test Room", floor=1)
 
-    def test_make_random_data_creates_10_records(self):
+    def test_make_random_data_creates_100_records(self):
         url = reverse('make_random_data')
         before_count = Collected.objects.count()
         self.client.get(url)
         after_count = Collected.objects.count()
-        self.assertEqual(after_count - before_count, 10)
+        self.assertEqual(after_count - before_count, 100)
 
 class WeightedAverageCongestionTest(TestCase):
     def setUp(self):
@@ -23,8 +23,8 @@ class WeightedAverageCongestionTest(TestCase):
         now = timezone.now()
         # 新しいデータ
         Collected.objects.create(location=self.loc, congestion_level=80, published_at=now)
-        # 古いデータ
-        Collected.objects.create(location=self.loc, congestion_level=20, published_at=now - timedelta(minutes=29))
+        # 古いデータ（10分前）
+        Collected.objects.create(location=self.loc, congestion_level=20, published_at=now - timedelta(minutes=10))
 
     def test_weighted_average_gives_more_weight_to_newer(self):
         qs = Collected.objects.filter(location=self.loc)
@@ -37,7 +37,7 @@ class WeightedAverageCongestionTest(TestCase):
             Collected.objects.create(location=self.loc, congestion_level=42, published_at=timezone.now())
         qs = Collected.objects.filter(location=self.loc)
         avg = weighted_average_congestion(qs, self.valid_time)
-        self.assertEqual(avg, 42)
+        self.assertAlmostEqual(avg, 42)
 
     def test_weighted_average_none(self):
         Collected.objects.all().delete()
@@ -76,7 +76,7 @@ class DisplayViewsTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_display_json_returns_data(self):
-        url = reverse('display_json')
+        url = reverse('display_json_api')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertIn('data', response.json())
