@@ -13,21 +13,13 @@ from .serializers import CongestionLevelItemSerializer, CongestionLevelCreateSer
 
 def index(request):
     return render(request, 'index.html')
-class DataCreate(CreateView):
-    model = Collected
-    form_class = CongestionForm
-    template_name = "con_form.html"  
-    success_url = "display/0/"  
-
-def initial(request):
-    return HttpResponse("Hello, World!")
 
 def make_random_data(request):
     repeat = 100
     for _ in range(repeat):
         collected = Collected.objects.create(
             location=random.choice(Location.objects.all()),
-            congestion_level=random.randint(0,5),
+            congestion_level=random.randint(1,5),
             published_at=timezone.now()
             )
         collected.save()
