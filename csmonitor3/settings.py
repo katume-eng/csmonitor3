@@ -34,6 +34,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'csmonitor3.urls'
 
+CSRF_TRUSTED_ORIGINS = ["https://csmonitor3.onrender.com"]
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -88,5 +90,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # staticfiles setting
 STATIC_URL = 'static/'
-# STATICFILES_DIRS = [BASE_DIR / "static"] # 共通の静的ファイルのURL
 STATIC_ROOT = BASE_DIR / "staticfiles"
