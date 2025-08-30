@@ -10,10 +10,12 @@ from django.urls import reverse_lazy
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import CongestionLevelItemSerializer, CongestionLevelCreateSerializer
+from django.contrib.admin.views.decorators import staff_member_required
 
 def index(request):
     return render(request, 'index.html')
 
+@staff_member_required
 def make_random_data(request):
     repeat = 100
     for _ in range(repeat):
@@ -44,7 +46,7 @@ def weighted_average_congestion(queryset, valid_time):
         return weighted_sum / total_weight
     return None
 
-
+@staff_member_required
 def aggregates_data(request):
     """
     一定時間ごとに集計して、データベースに保存する。各端末が計算するわけではない
