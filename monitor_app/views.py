@@ -1,3 +1,4 @@
+import secrets
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from .models import Location, Collected, CongestionLevel
@@ -11,6 +12,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import CongestionLevelItemSerializer, CongestionLevelCreateSerializer
 from django.contrib.admin.views.decorators import staff_member_required
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.cache import cache_control
 
 def index(request):
     return render(request, 'index.html')
@@ -107,22 +110,55 @@ def display_json_api(request):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+@require_http_methods(["GET", "POST"])
+@cache_control(no_store=True)  # 戻る時の履歴キャッシュを抑止（保険）
 def con_form_view(request):
-    form = CongestionForm()
-    form.fields['location'].queryset = Location.objects.all().order_by('floor', 'room_name')
+    qs = Location.objects.all().order_by('floor', 'room_name')
 
-    if request.method == 'POST':
-        form = CongestionForm(request.POST)
-        if form.is_valid():
-            congestion = form.save(commit=False)
-            congestion.published_at = timezone.now()
-            congestion.save()
-            return redirect('display', floor_given=1729)
+    if request.method == 'GET':
+        # 1) ワンタイムnonceを発行→セッションへ保存
+        nonce = secrets.token_urlsafe(24)
+        request.session['form_nonce'] = nonce
 
-    elif request.method == 'GET':
-        locations = Location.objects.all().order_by('floor', 'room_name')
-        floors = {}
-        for loc in locations:
-            floors.setdefault(loc.floor, []).append(loc)
-        return render(request, 'con_form.html', {'form': form})
-    return render(request, 'con_form.html', {'form': form})
+        form = CongestionForm()
+        form.fields['location'].queryset = qs
+        return render(request, 'con_form.html', {'form': form, 'nonce': nonce})
+
+    # POST ----------------------------------------------------
+    # 2) nonce照合（使い捨て：popで取り出して破棄）
+    posted = request.POST.get('nonce')
+    saved = request.session.pop('form_nonce', None)
+    if not posted or posted != saved:
+        # 二重送信/戻る→再送/別タブ再送 などを検知
+        # 新しいnonceを再発行してフォームを再表示
+        nonce = secrets.token_urlsafe(24)
+        request.session['form_nonce'] = nonce
+
+        form = CongestionForm()  # 直前入力を保持したいなら CongestionForm(request.POST) に
+        form.fields['location'].queryset = qs
+        return render(
+            request,
+            'con_form.html',
+            {'form': form, 'nonce': nonce, 'error': 'データの送信をやり直してください'},
+            status=409
+        )
+
+    # 3) 通常バリデーション
+    form = CongestionForm(request.POST)
+    form.fields['location'].queryset = qs
+    if not form.is_valid():
+        # 失敗時も新しいnonceを配布
+        nonce = secrets.token_urlsafe(24)
+        request.session['form_nonce'] = nonce
+        return render(request, 'con_form.html', {'form': form, 'nonce': nonce}, status=400)
+
+    # 4) 保存→PRG（Post → Redirect → Get）
+    congestion = form.save(commit=False)
+    congestion.published_at = timezone.now()
+    # try:
+    congestion.save()
+    # except IntegrityError:
+    #     # （任意）ユニーク制約違反時のハンドリング
+    #     pass
+
+    return redirect('display', floor_given=1729)
