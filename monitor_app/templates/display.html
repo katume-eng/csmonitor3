@@ -72,7 +72,10 @@
           section.appendChild(row);
           content.appendChild(section);
         }
-        checkScroll(); // スクロールが必要かどうかチェック
+        // ★ ここを変更：JSON描画が終わってから2秒待って自動スクロール判定
+        setTimeout(() => {
+          checkScroll(); // 必要なら autoScroll() が走る
+        }, 2000);
       });
     }
         // 自動スクロールのスクリプト
