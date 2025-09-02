@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>混雑データの登録</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/con_form_style.css' %}">
+  <title>混雑データの登録</title>
+  {% load static %}
+  <link rel="stylesheet" type="text/css" href="{% static 'monitor_app/css/con_form_style.css' %}">
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
-    <style>
+  <style>
     /* 既存CSSはそのまま */
     .error { 
         color:#c00; margin:.5rem 0;
@@ -77,64 +77,64 @@
         }
 
     button[disabled]{opacity:.6; pointer-events:none;}
-    </style>
+  </style>
 </head>
 <body>
-    <h1>混雑データを入力</h1>
+  <h1>混雑データを入力</h1>
 
   <form id="congestion-form" method="post" action="">
-        {% csrf_token %}
+    {% csrf_token %}
     <!-- ★ 二重送信防止: ビューから渡された nonce を hidden に -->
     <input type="hidden" name="nonce" value="{{ nonce }}">
     <input type="hidden" name="location" id="placeInput">
 
-        <h2>場所を選んでください</h2>
-        {% regroup form.fields.location.queryset by floor as floor_list %}
-        {% for floor_group in floor_list %}
-            <div class="floor-section">
-                <h3>{{ floor_group.grouper }}階</h3>
-                <div class="card-container">
-                    {% for location in floor_group.list %}
-                        <div class="card" data-value="{{ location.id }}">
-                            <strong>{{ location.program_name }}</strong><br>
-                            {{ location.room_name }}（{{ location.floor }}F）<br>
-                            <small>{{ location.comment }}</small>
-                        </div>
-                    {% endfor %}
-                </div>
+    <h2>場所を選んでください</h2>
+    {% regroup form.fields.location.queryset by floor as floor_list %}
+    {% for floor_group in floor_list %}
+      <div class="floor-section">
+        <h3>{{ floor_group.grouper }}階</h3>
+        <div class="card-container">
+          {% for location in floor_group.list %}
+            <div class="card" data-value="{{ location.id }}">
+              <strong>{{ location.program_name }}</strong><br>
+              {{ location.room_name }}（{{ location.floor }}F）<br>
+              <small>{{ location.comment }}</small>
             </div>
-        {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
 
-        <h2>混雑度を選んでください</h2>
+    <h2>混雑度を選んでください</h2>
     <div id="crowdRadioGroup" style="display:flex; gap:1rem; margin-bottom:1rem;">
       <label><input type="radio" name="congestion_level" value="1" required> 空いている</label>
-                <label><input type="radio" name="congestion_level" value="2"> 人は少ない</label>
-                <label><input type="radio" name="congestion_level" value="3"> 普通に人がいる</label>
-                <label><input type="radio" name="congestion_level" value="4"> 人は多い</label>
-                <label><input type="radio" name="congestion_level" value="5"> とても混雑している</label>
-            </div>
+      <label><input type="radio" name="congestion_level" value="2"> 人は少ない</label>
+      <label><input type="radio" name="congestion_level" value="3"> 普通に人がいる</label>
+      <label><input type="radio" name="congestion_level" value="4"> 人は多い</label>
+      <label><input type="radio" name="congestion_level" value="5"> とても混雑している</label>
+    </div>
 
     <div id="form-error" class="error" style="display:none;">場所を選んでください。</div>
 
-        <button id="submit-btn" type="submit">混雑状況を見る!</button>
-    </form>
+    <button id="submit-btn" type="submit">混雑状況を見る!</button>
+  </form>
 
-    <script>
-        const cards = document.querySelectorAll('.card');
-        const placeInput = document.getElementById('placeInput');
+  <script>
+    const cards = document.querySelectorAll('.card');
+    const placeInput = document.getElementById('placeInput');
     const form = document.getElementById('congestion-form');
     const btn = document.getElementById('submit-btn');
     const err = document.getElementById('form-error');
 
     // 場所カード選択
-        cards.forEach(card => {
-            card.addEventListener('click', () => {
-                cards.forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
-                placeInput.value = card.dataset.value;
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        cards.forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        placeInput.value = card.dataset.value;
         if (err) err.style.display = 'none';
-            });
-        });
+      });
+    });
 
     // 二重送信と未選択防止（軽いUX）
     form.addEventListener('submit', (e) => {
@@ -147,7 +147,7 @@
         btn.disabled = true;
         btn.textContent = '送信中...';
       }
-        });
-    </script>
+    });
+  </script>
 </body>
 </html>
