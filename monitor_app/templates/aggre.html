@@ -2,14 +2,14 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <title>計算</title>
+  <meta charset="UTF-8">
+  <title>計算</title>
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
 </head>
 <body>
-<h1>Aggregation page</h1>
-<script>
+  <h1>Aggregation page</h1>
+  <script>
     // DjangoのCSRFトークンをCookieから読む（標準パターン）
     function getCookie(name) {
       const value = `; ${document.cookie}`;
@@ -28,9 +28,9 @@
     function loop() {
       postAggregate().finally(() => {
         setTimeout(loop, 60_000); // 前回終了から60秒後
-        });
+      });
     }
     window.onload = loop;
-</script>
+  </script>
 </body>
 </html>
