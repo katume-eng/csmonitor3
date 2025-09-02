@@ -1,33 +1,36 @@
+<!-- templates/aggre.html -->
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>計算</title>
+  <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+  <meta http-equiv="Pragma" content="no-cache">
 </head>
 <body>
 <h1>Aggregation page</h1>
 <script>
-    function fetchData() {
-        return fetch(window.location.href)
-            .then(response => response.text())
-            .then(text => {
-                //console.log("取得成功:", new Date());
-            })
-            .catch(error => {
-                console.error("エラー:", error);
-            });
+    // DjangoのCSRFトークンをCookieから読む（標準パターン）
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+    }
+    const csrftoken = getCookie('csrftoken');
+
+    function postAggregate() {
+      return fetch(window.location.pathname, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken },
+      }).catch(err => console.error('集計エラー:', err));
     }
 
-    function fetchLoop() {
-        fetchData().finally(() => {
-            setTimeout(fetchLoop, 60000); // ← 前の処理終了から60秒後に次！
+    function loop() {
+      postAggregate().finally(() => {
+        setTimeout(loop, 60_000); // 前回終了から60秒後
         });
     }
-
-    window.onload = () => {
-        fetchLoop();
-    };
+    window.onload = loop;
 </script>
 </body>
 </html>
