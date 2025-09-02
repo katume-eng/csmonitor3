@@ -98,7 +98,6 @@ def display_json_api(request):
                 "room_name": it["room_name"],
                 "level": it["level"],
                 "reliability": it["reliability"],
-                "comment": it["comment"],
             })
 
         return Response({"data": floors})
