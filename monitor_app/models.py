@@ -6,13 +6,11 @@ from django.core.validators import MinValueValidator, MaxValueValidator
 class Location(models.Model):
     program_name = models.CharField(max_length=255, default="default program")
     room_name = models.CharField(max_length=255, default="default room")
-    floor = models.IntegerField(default=0)
-    comment = models.TextField(default="default comment is here!")
+    floor = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        # return f"{self.program_name} - {self.room_name} - {self.floor}"
-        return f"{self.program_name} at {self.room_name} on {self.floor} floor - comment = ' {self.comment} '"
+        return f"{self.program_name} at {self.room_name} on {self.floor} floor "
 
 class Collected(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
@@ -30,4 +28,4 @@ class CongestionLevel(models.Model):
     reliability = models.IntegerField(default=0)
 
     def __str__(self):
-        return f"{self.location.program_name} - {self.level}level - {self.reliability}の信頼度"
+        return f"{self.location.program_name} - {self.level}level - {self.reliability}のデータ数"

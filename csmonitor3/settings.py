@@ -8,7 +8,7 @@ env.read_env('.env')
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=['*'])
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
 
 INSTALLED_APPS = [
     'monitor_app.apps.MonitorAppConfig',
@@ -33,6 +33,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'csmonitor3.urls'
+
+CSRF_TRUSTED_ORIGINS = ["https://csmonitor3.onrender.com"]
 
 TEMPLATES = [
     {
@@ -87,6 +89,5 @@ USE_TZ = True
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # staticfiles setting
-STATIC_URL = 'static/'
-# STATICFILES_DIRS = [BASE_DIR / "static"] # 共通の静的ファイルのURL
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / "staticfiles"

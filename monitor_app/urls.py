@@ -1,11 +1,10 @@
 from django.urls import path
 from . import views
-from .views import DataCreate
 
 urlpatterns = [
     path("", views.index, name="index"),
     path("vote/", views.con_form_view, name="vote"),
-    path("initial/", views.initial, name="initial"),
+    # path("initial/", views.initial, name="initial"),
     path("aggregates_data/", views.aggregates_data, name="aggregates_data"),
     path("display/<int:floor_given>/", views.display, name="display"),
     # path("display_json/",views.display_json, name="display_json"),
