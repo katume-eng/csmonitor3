@@ -34,3 +34,15 @@ venv.bak/
 # Windows
 Thumbs.db
 ehthumbs.db
+
+# Django static/media
+/staticfiles/
+/media/
+
+# Python packaging
+*.egg-info/
+
+# Test & coverage
+.pytest_cache/
+htmlcov/
+coverage.xml
