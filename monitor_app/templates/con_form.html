@@ -91,18 +91,24 @@
     <h2>場所を選んでください</h2>
     {% regroup form.fields.location.queryset by floor as floor_list %}
     {% for floor_group in floor_list %}
-      <div class="floor-section">
-        <h3>{{ floor_group.grouper }}階</h3>
-        <div class="card-container">
-          {% for location in floor_group.list %}
-            <div class="card" data-value="{{ location.id }}">
-              <strong>{{ location.program_name }}</strong><br>
-              {{ location.room_name }}（{{ location.floor }}F）<br>
-              <small>{{ location.comment }}</small>
-            </div>
-          {% endfor %}
-        </div>
+  <div class="floor-section">
+    <h3>
+      {% if floor_group.grouper == 0 %}
+        食品販売
+      {% else %}
+        {{ floor_group.grouper }}階
+      {% endif %}
+      </h3>
+      <div class="card-container">
+        {% for location in floor_group.list %}
+          <div class="card" data-value="{{ location.id }}">
+            <strong>{{ location.program_name }}</strong><br>
+            {{ location.room_name }}（{{ location.floor }}F）<br>
+            <small>{{ location.comment }}</small>
+          </div>
+        {% endfor %}
       </div>
+    </div>
     {% endfor %}
 
     <h2>混雑度を選んでください</h2>
