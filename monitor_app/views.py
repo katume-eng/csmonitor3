@@ -163,7 +163,7 @@ def con_form_view(request):
     return redirect('display', floor_given=1729)
 
 @api_view(['GET', 'POST'])
-def zero_api(request):
+def food_cs_api(request):
     if request.method == 'GET':
         # 0階の CongestionLevel だけ取得
         qs = (CongestionLevel.objects
