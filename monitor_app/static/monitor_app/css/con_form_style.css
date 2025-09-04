@@ -1,92 +1,177 @@
-/* 混雑度ラジオボタンのラベル色 */
-#crowdRadioGroup label:nth-child(1) {
-    color: #2ecc40; /* 緑：空いている */
-}
-#crowdRadioGroup label:nth-child(2) {
-    color: #27ae60; /* やや緑：人は少ない */
-}
-#crowdRadioGroup label:nth-child(3) {
-    color: #f1c40f; /* 黄色：普通 */
-}
-#crowdRadioGroup label:nth-child(4) {
-    color: #e67e22; /* オレンジ：人は多い */
-}
-#crowdRadioGroup label:nth-child(5) {
-    color: #e74c3c; /* 赤：とても混雑している */
-}
-body {
-    font-family: 'Helvetica Neue', sans-serif;
-    background-color: #f8f9fa;
-    margin: 0;
-    padding: 40px;
+/* ========== Base ========== */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;   /* 横スクロール禁止 */
+  font-family: 'Helvetica Neue', sans-serif;
+  background-color: #f8f9fa;
 }
 
+/* 見出し */
 h1 {
-    text-align: center;
-    color: #343a40;
-    margin-bottom: 30px;
+  text-align: center;
+  color: #343a40;
+  margin: 20px 0 30px;
+}
+h2 {
+  margin: 16px 0;
+  text-align: center;
+}
+h3 {
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
 }
 
+/* エラー表示 */
+.error {
+  color: #c00;
+  margin: .5rem 0;
+  text-align: center;
+}
+
+/* ========== Form ========== */
 form {
-    max-width: 500px;
-    margin: 0 auto;
-    background: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  box-sizing: border-box;
 }
 
 form p {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
+/* ラベル */
 label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #495057;
+  display: block;
+  font-weight: bold;
+  margin-bottom: 8px;
+  color: #495057;
 }
 
+/* テキスト入力やセレクト */
 input[type="text"],
 select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
+/* ラジオボタン */
 input[type="radio"] {
-    margin-right: 8px;
+  margin-right: 8px;
 }
 
+/* リスト */
 ul {
-    list-style: none;
-    padding-left: 0;
+  list-style: none;
+  padding-left: 0;
 }
-
 ul li {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
-button[type="submit"] {
-    background-color: #007bff;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
-    width: 100%;
+/* ========== Floor Sections ========== */
+.floor-section {
+  margin-bottom: 1.5rem;
+}
+/* 階数タイトルを中央寄せ */
+.floor-section h3 {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #007bff;
+  padding-bottom: 0.5rem;
 }
 
-button[type="submit"]:hover {
-    background-color: #0056b3;
+/* ========== Cards ========== */
+.card-container {
+  display: flex;
+  flex-direction: column; /* スマホでは縦並び */
+  gap: 1rem;
+  margin-bottom: 1.5rem;
 }
 
+.card {
+  width: 100%;
+  max-width: 100%;
+  flex: none;
+  border: 2px solid #ccc;
+  border-radius: 1rem;
+  padding: 1rem;
+  text-align: center;
+  cursor: pointer;
+  transition: 0.2s ease;
+  box-sizing: border-box;
+
+  /* 長いテキストを折り返す */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.card:hover {
+  background-color: #f0f0f0;
+}
+
+.card.selected {
+  border-color: #007bff;
+  background-color: #e6f0ff;
+  box-shadow: 0 0 10px rgba(0, 123, 255, 0.3);
+}
+
+/* ========== Radio Group ========== */
+/* ラジオボタングループ全体を中央寄せ */
 #crowdRadioGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* 中央寄せ */
+  text-align: center;    /* ラベル文字も中央に */
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* 各ラベルの幅を内容に合わせる（左右に広がりすぎないように） */
+#crowdRadioGroup label {
+  display: inline-block;
+}
+
+/* 混雑度ラジオボタンのラベル色 */
+#crowdRadioGroup label:nth-child(1) { color: #2ecc40; } /* 空いている */
+#crowdRadioGroup label:nth-child(2) { color: #27ae60; } /* 人は少ない */
+#crowdRadioGroup label:nth-child(3) { color: #f1c40f; } /* 普通 */
+#crowdRadioGroup label:nth-child(4) { color: #e67e22; } /* 人は多い */
+#crowdRadioGroup label:nth-child(5) { color: #e74c3c; } /* とても混雑 */
+
+/* ========== Submit Button ========== */
+button[type="submit"],
+#submit-btn {
+  background-color: #007bff;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1.5rem;
+}
+
+button[type="submit"]:hover,
+#submit-btn:hover {
+  background-color: #0056b3;
+}
+
+button[disabled] {
+  opacity: .6;
+  pointer-events: none;
 }
