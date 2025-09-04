@@ -7,10 +7,11 @@ class CongestionLevelItemSerializer(serializers.ModelSerializer):
     program_name = serializers.CharField(source='location.program_name', read_only=True)
     room_name    = serializers.CharField(source='location.room_name', read_only=True)
     floor        = serializers.IntegerField(source='location.floor', read_only=True)
+    floor_local_id = serializers.IntegerField(source='location.floor_local_id', read_only=True)
 
     class Meta:
         model  = CongestionLevel
-        fields = ['program_name', 'room_name', 'level', 'reliability', 'floor']
+        fields = ['program_name', 'room_name', 'floor_local_id', 'level', 'reliability', 'floor']
 
 class CongestionLevelCreateSerializer(serializers.ModelSerializer):
     class Meta:
