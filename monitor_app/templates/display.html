@@ -18,37 +18,74 @@
   <h3 class="caution">すべての企画ではありません</h3>
   <div class="content" id="congestion-content">
   </div>
-  <script>
-    function fetchAndUpdate() {
-      const floorGiven = parseInt(document.body.dataset.floorGiven); // 追加！
-      fetch('/display_json_api/', {
-        headers: { 'X-Requested-With': 'XMLHttpRequest' }
-      })
-      .then(response => response.json())
+<script>
+  // 描画が完全に落ち着いてから実行（rAF×2）
+  const afterPaint = (cb) => requestAnimationFrame(()=>requestAnimationFrame(cb));
+
+  function autoScroll() {
+    const el = document.getElementById('congestion-content');
+    let rafId = null;
+    const stepPx = 1;   // 速くしたいなら 2〜3
+
+    const tick = () => {
+      // 毎フレーム実寸を取得して、ズレに追従
+      const maxTop = el.scrollHeight - el.clientHeight;
+
+      if (maxTop <= 0 || el.scrollTop >= maxTop - 1) {
+        // 下端到達
+        cancelAnimationFrame(rafId);
+        setTimeout(() => location.reload(), 2500);
+        return;
+      }
+      el.scrollTop = Math.min(el.scrollTop + stepPx, maxTop);
+      rafId = requestAnimationFrame(tick);
+    };
+
+    // タブ非表示なら一時停止（戻ったら再開）
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        if (rafId) cancelAnimationFrame(rafId);
+      } else {
+        rafId = requestAnimationFrame(tick);
+      }
+    });
+
+    rafId = requestAnimationFrame(tick);
+  }
+
+  function checkScroll() {
+    const el = document.getElementById('congestion-content');
+    afterPaint(() => {
+      if (el.scrollHeight > el.clientHeight + 1) {
+        autoScroll();
+      } else {
+        setTimeout(() => location.reload(), 10000);
+      }
+    });
+  }
+
+  function fetchAndUpdate() {
+    const floorGiven = parseInt(document.body.dataset.floorGiven);
+    fetch('/display_json_api/', { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+      .then(r => r.json())
       .then(data => {
         const content = document.getElementById('congestion-content');
-        content.innerHTML = ''; // 既存のカードを全部消す（差分だけ変える方法も可）
-  
+        content.innerHTML = '';
+
         const congestionData = data.data;
         for (const floor in congestionData) {
-          if (floorGiven !== 0 && parseInt(floor) !== floorGiven) continue; // ← 追加！
+          if (floorGiven !== 0 && parseInt(floor) !== floorGiven) continue;
+
           const section = document.createElement('div');
           section.className = 'floor-section';
-  
+
           const title = document.createElement('h2');
-          let floor_name = '';
-          if (parseInt(floor) === 0) {
-            floor_name = '食品販売';
-          }
-          else {
-            floor_name = `${floor}階`;
-          }
-          title.textContent = floor_name;
+          title.textContent = (parseInt(floor) === 0) ? '食品販売' : `${floor}階`;
           section.appendChild(title);
-  
+
           const row = document.createElement('div');
           row.className = 'card-row';
-  
+
           congestionData[floor].forEach(item => {
             const card = document.createElement('div');
             card.style.backgroundColor = `hsl(${(1 - (item.level*100/5 - 1) / 99) * 120}, 100%, 50%)`;
@@ -56,60 +93,24 @@
             card.innerHTML = `
               <div class="card-program">${item.program_name}</div>
               <div class="card-location">${item.room_name}</div>
-              <div class="card-meta">混雑度：${item.level} データ数：${item.reliability}</div>
+              <div class="card-level">混雑度：${item.level}</div>
+              <div class="card-data">データ数：${item.reliability}</div>
             `;
-
-            //console.log("item.level =", item.level);////
-
             card.classList.add('card-updated');
-            card.addEventListener('animationend',()=>{
-              card.classList.remove('card-updated');
-            });
-
-
+            card.addEventListener('animationend', () => card.classList.remove('card-updated'));
             row.appendChild(card);
           });
-  
+
           section.appendChild(row);
           content.appendChild(section);
         }
-        // ★ ここを変更：JSON描画が終わってから2秒待って自動スクロール判定
-        setTimeout(() => {
-          checkScroll(); // 必要なら autoScroll() が走る
-        }, 2000);
-      });
-    }
-        // 自動スクロールのスクリプト
-    function autoScroll() {
-        const scrollContainer = document.getElementById('congestion-content');
-        let scrollAmount = 0;
-        const scrollStep = 1;
-        const scrollInterval = setInterval(() => {
-            scrollContainer.scrollTop += scrollStep;
-            scrollAmount += scrollStep;
-            if (scrollAmount >= scrollContainer.scrollHeight - scrollContainer.clientHeight) {
-                clearInterval(scrollInterval);
-                setTimeout(() => {
-                    location.reload(); // スクロールが終わったらリロード
-                }, 2500);
-            }
-        }, 23); // スクロールの速度を調整（数字を小さくすると速くなる）
-    }
 
-        // スクロールが必要かどうかチェック
-    function checkScroll() {
-        const scrollContainer = document.getElementById('congestion-content');
-        if (scrollContainer.scrollHeight > scrollContainer.clientHeight) {
-            autoScroll(); // スクロールが必要なら自動スクロールを開始
-        } else {
-            setTimeout(() => {
-                location.reload(); // スクロールが不要なら20秒ごとにリロード
-            }, 10000);
-        }
-    }
-    window.onload = () => {
-      fetchAndUpdate();
-    };
-  </script>
+        // レイアウト確定後にスクロール判定
+        setTimeout(checkScroll, 200);
+      });
+  }
+
+  window.onload = fetchAndUpdate;
+</script>
 </body>
 </html>
