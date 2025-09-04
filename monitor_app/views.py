@@ -1,4 +1,4 @@
-import secrets
+import secrets, statistics
 from django.shortcuts import render,redirect
 from django.http import HttpResponse,JsonResponse
 from .models import Location, Collected, CongestionLevel
@@ -30,45 +30,89 @@ def make_random_data(request):
         collected.save()
     return HttpResponse(f"Created {repeat} random data")
 
-def weighted_average_congestion(queryset, valid_time):
+def _robust_filter_by_mad(objs, get_value=lambda o: o.congestion_level, k=3):
     """
-    混雑度の重み付き平均を計算する。新しいデータほど重みが大きい。
-    :param queryset: 対象のCollectedクエリセット
-    :param valid_time: 有効時間（分）
-    :return: 重み付き平均値（float）
+    objs: Collected の iterable
+    get_value: 値の取り出し関数（デフォ: congestion_level 1..5）
+    k: しきい値の強さ（一般に 2.5〜3 が無難）
+    戻り値: 外れ値を除いた objs の list
     """
-    weighted_sum = 0
-    total_weight = 0
+    vals = [get_value(o) for o in objs]
+    if len(vals) < 10:
+        return list(objs)  # サンプル少ない時は弾かない
+
+    med = statistics.median(vals)
+    abs_dev = [abs(v - med) for v in vals]
+    mad = statistics.median(abs_dev)
+    if mad == 0:
+        return list(objs)  # 全部ほぼ同じ → 弾かない
+
+    # 正規分布換算のスケーリング係数
+    s = 1.4826 * mad
+    keep = []
+    for o, v in zip(objs, vals):
+        if abs(v - med) <= k * s:
+            keep.append(o)
+    return keep
+
+def weighted_average_congestion(queryset, valid_time_minutes: int):
+    """
+    新しいデータほど重みが大きい重み付き平均。外れ値除去は事前にやる想定。
+    """
     now = timezone.now()
-    for congestion in queryset:
-        time_diff = (now - congestion.published_at).total_seconds() / 60
-        weight = max(0, valid_time - (time_diff**(1.25))) / valid_time  # 分単位で重みを計算 重みは1.25乗にしよう
-        weighted_sum += congestion.congestion_level * weight
+    weighted_sum = 0.0
+    total_weight = 0.0
+    for c in queryset:
+        # 分単位の経過時間
+        dt_min = (now - c.published_at).total_seconds() / 60.0
+        # あなたの元ロジック：1.25乗で減衰、0未満は切り捨て
+        weight = max(0.0, valid_time_minutes - (dt_min ** 1.25)) / valid_time_minutes
+        if weight <= 0:
+            continue
+        weighted_sum += c.congestion_level * weight
         total_weight += weight
+
     if total_weight > 0:
-        return weighted_sum / total_weight
+        # 1..5 にクランプ（任意）
+        avg = weighted_sum / total_weight
+        return max(1.0, min(5.0, avg))
     return None
 
 @staff_member_required
 def aggregates_data(request):
     """
-    一定時間ごとに集計して、データベースに保存する。各端末が計算するわけではない
+    Collected を一定時間で集計し CongestionLevel に保存。
+    外れ値は MAD で除外してから重み付き平均。
     """
-    collected_data = Collected.objects.all()
-    location_data = Location.objects.all()
     valid_time = 15  # minutes
-    collected_data_filtered = collected_data.filter(published_at__gte=timezone.now() - timedelta(minutes=valid_time))
+    cutoff = timezone.now() - timedelta(minutes=valid_time)
 
-    for loc in location_data:
-        filtered_by_loc = collected_data_filtered.filter(location=loc)
-        num_filtered_by_loc = filtered_by_loc.count()
-        if filtered_by_loc.exists():
-            avg = weighted_average_congestion(filtered_by_loc, valid_time)
-            if avg is not None:
-                congestion_level_obj, created = CongestionLevel.objects.get_or_create(location=loc)
-                congestion_level_obj.level = avg
-                congestion_level_obj.reliability = num_filtered_by_loc
-                congestion_level_obj.save()
+    location_qs = Location.objects.all()
+    collected_recent = Collected.objects.filter(published_at__gte=cutoff).select_related("location")
+
+    for loc in location_qs:
+        # 該当ロケーションの最近データ
+        samples = list(collected_recent.filter(location=loc).order_by("-published_at"))
+        if not samples:
+            continue
+
+        # ★ 外れ値除去（中央値+MAD, k=3）
+        samples_robust = _robust_filter_by_mad(samples, k=3)
+
+        num_used = len(samples_robust)
+        if num_used == 0:
+            continue
+
+        avg = weighted_average_congestion(samples_robust, valid_time_minutes=valid_time)
+        if avg is None:
+            continue
+
+        obj, _ = CongestionLevel.objects.get_or_create(location=loc)
+        obj.level = avg
+        obj.reliability = num_used  # 実際に使った点の数（除外後）
+        obj.last_update_at = timezone.now()
+        obj.save()
+
     return render(request, 'aggre.html', {})
 
 def display(request,floor_given):
@@ -77,7 +121,8 @@ def display(request,floor_given):
         congestion_levels_each_floor[floor] = CongestionLevel.objects.filter(location__floor=floor)
 
     if floor_given == 1729:
-        return render(request, 'display_user.html',{'congestion_level': congestion_levels_each_floor,'floor_given':0})
+        time_now = timezone.now()
+        return render(request, 'display_user.html',{'congestion_level': congestion_levels_each_floor,'floor_given':0, 'time_now':time_now})
  
     return render(request, 'display.html', {'congestion_level': congestion_levels_each_floor,'floor_given':floor_given})
 

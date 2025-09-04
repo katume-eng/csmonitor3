@@ -9,13 +9,14 @@
 </head>
 <body data-floor-given="{{ floor_given }}">
   <!--display_user.html-->
-  <h1>各階の混雑度はこちら！！</h1>
-  <a href="{% url 'vote' %}" class="btn-latest-data"><h2>-------最新のデータを見る-------</h2></a>
+  <h3>{{ time_now|date:"H:i" }}時点の混雑度!</h3>
+  <a href="{% url 'vote' %}" class="btn-latest-data"><h2>→→最新の混雑データを見る←←</h2></a>
   <div class="colorbar">
   <span>空いている</span>
   <div class="bar"></div>
   <span>とても混雑</span>
   </div>
+  <h3 class="caution">すべての企画ではありません</h3>
 
   <div class="content" id="congestion-content">
   </div>
