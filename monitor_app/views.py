@@ -94,6 +94,7 @@ def display_json_api(request):
         for it in data:
             key = str(it['floor'])
             floors.setdefault(key, []).append({
+                "floor_local_id": it["floor_local_id"],
                 "program_name": it["program_name"],
                 "room_name": it["room_name"],
                 "level": it["level"],
