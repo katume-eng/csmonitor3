@@ -1,0 +1,179 @@
+/* ========== Global ========== */
+html, body {
+  height: 100%;
+}
+
+:root {
+  --gutter: 16px;
+}
+
+/* bodyはページスクロールを持たせない代わりに、内側で確実にスクロールさせる */
+body {
+  font-family: Arial, sans-serif;
+  background: #e9e9e9;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  /* モバイルのUI高さ変動を吸収：dvh優先、svhをフォールバックに */
+  min-height: 100dvh; /* 対応端末 */
+  /* overflowはhiddenのままでOK（内側の.contentがスクロールを受け持つ） */
+  overflow: hidden;
+}
+
+h1, h2 {
+  text-align: center;
+  margin: 16px 0;
+}
+
+/* グラデ棒 */
+.colorbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 var(--gutter) 12px;
+}
+.colorbar .bar {
+  flex: 1;
+  height: 30px;
+  background: linear-gradient(to right,
+    hsl(120,100%,50%),
+    hsl(60,100%,50%),
+    hsl(0,100%,50%)
+  );
+  border-radius: 4px;
+}
+
+/* 上部のリンク */
+a {
+  display: block;
+  text-align: center;
+  margin: 6px 0 10px;
+  color: #007bff;
+  text-decoration: none;
+}
+
+/* ========== Scrollable content ========== */
+/* ここが“唯一”スクロールする領域 */
+.content {
+  /* ヘッダ分の高さを引く固定計算はやめて、flexで確実に可視領域を埋める */
+  flex: 1 1 auto;
+  min-height: 0;            /* これがないと内側スクロールが起きないことがある */
+  overflow-y: auto;
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1200px;
+
+  /* 下部UIに飲み込まれないための逃げスペース */
+  padding: 0 var(--gutter) max(24px, env(safe-area-inset-bottom) + 24px);
+  /* iOS旧環境向けフォールバック（envが未対応でも24pxは確保される） */
+}
+
+/* セクション */
+.floor-section {
+  margin: 0 0 40px;
+  background-color: #ebebeb;
+}
+
+.floor-section h2 {
+  font-size: 1.2rem;
+  margin: 24px 0 12px;
+  padding-top: 8px;
+  border-top: 5px solid #bee2fc;
+  text-align: center;
+}
+
+/* 最下段にさらに余白（保険）*/
+.floor-section:last-child {
+  margin-bottom: max(48px, env(safe-area-inset-bottom) + 48px);
+}
+
+/* 横並び */
+.card-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px;
+}
+
+/* カード */
+.card {
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  padding: 15px;
+  width: 220px;
+  transition: transform 0.3s;
+
+  /* 中央寄せを追加 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;      /* 横方向中央 */
+  justify-content: center;  /* 縦方向中央 */
+  text-align: center;       /* テキストも中央揃え */
+}
+
+.card:hover { transform: scale(1.03); }
+
+.card-program {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 6px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.card-location {
+  font-size: 1rem;
+  color: #444;
+  margin-bottom: 6px;
+}
+
+.card-level,
+.card-data,
+.card-comment {
+  font-size: 0.9em;
+  color: #555;
+  margin-bottom: 6px;
+}
+
+/* レベル枠（必要なら活用） */
+.card.low { border-left: 6px solid #4CAF50; }
+.card.medium { border-left: 6px solid #FFC107; }
+.card.high { border-left: 6px solid #F44336; }
+
+/* アニメーション */
+@keyframes flashUpdate {
+  0%   { background-color: transparent; opacity: 0.3; }
+  50%  { background-color: rgba(140,197,255,0.585); opacity: 1; }
+  100% { background-color: transparent; }
+}
+.card-updated { animation: flashUpdate 0.5s ease-out; }
+
+/* ========== Mobile ========== */
+@media (max-width: 600px) {
+  /* 幅いっぱいに、内側余白はgutterに任せる */
+  .content {
+    max-width: none;
+  }
+
+  .card-row {
+    padding: 0 4px;
+    gap: 12px;
+  }
+
+  .card {
+    width: calc(50% - 12px);
+    box-sizing: border-box;
+    padding: 10px;
+  }
+
+  .card-program { font-size: 1.05rem; }
+  .card-location { font-size: 0.95rem; }
+}
+
+/* ========== Very small phones ========== */
+@media (max-width: 360px) {
+  .card { width: 100%; }
+}
