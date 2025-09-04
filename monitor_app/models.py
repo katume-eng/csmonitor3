@@ -11,7 +11,7 @@ class Location(models.Model):
     floor_local_id = models.IntegerField(default=100)
 
     def __str__(self):
-        return f"{self.program_name} at {self.room_name} on {self.floor} floor, id={self.id}"
+        return f"{self.program_name} at {self.room_name} on {self.floor} floor, floor_local_id={self.floor_local_id}"
 
 class Collected(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
