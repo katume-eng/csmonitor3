@@ -161,3 +161,34 @@ def con_form_view(request):
     #     pass
 
     return redirect('display', floor_given=1729)
+
+@api_view(['GET', 'POST'])
+def zero_api(request):
+    if request.method == 'GET':
+        # 0階の CongestionLevel だけ取得
+        qs = (CongestionLevel.objects
+              .select_related('location')
+              .filter(location__floor=0)
+              .order_by('location__floor_local_id'))
+
+        data = CongestionLevelItemSerializer(qs, many=True).data
+
+        # floor_local_id をキーにした辞書に組み直す
+        result = {}
+        for it in data:
+            fid = str(it["floor_local_id"])  # JSON のキーは文字列
+            result[fid] = {
+                "program_name": it["program_name"],
+                "room_name": it["room_name"],
+                "level": it["level"],
+                "reliability": it["reliability"],
+            }
+
+        return Response({"data": result})
+    
+    elif request.method == 'POST':
+        serializer = CongestionLevelCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
