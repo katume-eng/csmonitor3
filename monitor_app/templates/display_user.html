@@ -81,6 +81,14 @@
     window.onload = () => {
       fetchAndUpdate();
     };
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const navEntries = performance.getEntriesByType("navigation");
+      if (navEntries.length && navEntries[0].type === "reload") {
+        // ★ リロード検知時にリダイレクト
+        window.location.replace("/vote/");  // ←好きなURLに変更
+      }
+    });
   </script>
 </body>
 </html>
