@@ -8,9 +8,10 @@ class Location(models.Model):
     room_name = models.CharField(max_length=255, default="default room")
     floor = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(5)])
     created_at = models.DateTimeField(default=timezone.now)
+    floor_local_id = models.IntegerField(default=100)
 
     def __str__(self):
-        return f"{self.program_name} at {self.room_name} on {self.floor} floor "
+        return f"{self.program_name} at {self.room_name} on {self.floor} floor, id={self.id}"
 
 class Collected(models.Model):
     location = models.ForeignKey('Location', on_delete=models.CASCADE)
