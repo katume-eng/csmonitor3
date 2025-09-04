@@ -6,6 +6,8 @@ html, body {
   overflow-x: hidden;   /* 横スクロール禁止 */
   font-family: 'Helvetica Neue', sans-serif;
   background-color: #f8f9fa;
+  font-size: 18px;      /* ★ ベースフォントを大きく */
+  line-height: 1.6;
 }
 
 /* 見出し */
@@ -13,14 +15,16 @@ h1 {
   text-align: center;
   color: #343a40;
   margin: 20px 0 30px;
+  font-size: 2rem;      /* 約36px */
 }
 h2 {
   margin: 16px 0;
   text-align: center;
+  font-size: 1.5rem;    /* 約27px */
 }
 h3 {
   margin-bottom: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.3rem;    /* 約23px */
   border-bottom: 2px solid #007bff;
   padding-bottom: 0.5rem;
 }
@@ -30,6 +34,7 @@ h3 {
   color: #c00;
   margin: .5rem 0;
   text-align: center;
+  font-size: 1rem;
 }
 
 /* ========== Form ========== */
@@ -38,10 +43,11 @@ form {
   max-width: 100%;
   margin: 0 auto;
   background: #fff;
-  padding: 20px;
+  padding: 24px;
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   box-sizing: border-box;
+  font-size: 1.1rem;   /* 約20px */
 }
 
 form p {
@@ -54,21 +60,24 @@ label {
   font-weight: bold;
   margin-bottom: 8px;
   color: #495057;
+  font-size: 1.1rem;
 }
 
 /* テキスト入力やセレクト */
 input[type="text"],
 select {
   width: 100%;
-  padding: 10px;
+  padding: 14px;
   border: 1px solid #ced4da;
   border-radius: 4px;
   box-sizing: border-box;
+  font-size: 1rem;
 }
 
 /* ラジオボタン */
 input[type="radio"] {
   margin-right: 8px;
+  transform: scale(1.4);   /* ★ タップしやすいように拡大 */
 }
 
 /* リスト */
@@ -77,7 +86,7 @@ ul {
   padding-left: 0;
 }
 ul li {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 /* ========== Floor Sections ========== */
@@ -87,7 +96,7 @@ ul li {
 /* 階数タイトルを中央寄せ */
 .floor-section h3 {
   text-align: center;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   margin-bottom: 1rem;
   border-bottom: 2px solid #007bff;
   padding-bottom: 0.5rem;
@@ -107,11 +116,12 @@ ul li {
   flex: none;
   border: 2px solid #ccc;
   border-radius: 1rem;
-  padding: 1rem;
+  padding: 1.2rem;
   text-align: center;
   cursor: pointer;
   transition: 0.2s ease;
   box-sizing: border-box;
+  font-size: 1.1rem;
 
   /* 長いテキストを折り返す */
   word-wrap: break-word;
@@ -140,30 +150,34 @@ ul li {
   margin-bottom: 1rem;
 }
 
-/* 各ラベルの幅を内容に合わせる（左右に広がりすぎないように） */
+/* 各ラベルの幅を内容に合わせる */
 #crowdRadioGroup label {
   display: inline-block;
+  font-size: 1.1rem;
 }
 
 /* 混雑度ラジオボタンのラベル色 */
-#crowdRadioGroup label:nth-child(1) { color: #2ecc40; } /* 空いている */
-#crowdRadioGroup label:nth-child(2) { color: #27ae60; } /* 人は少ない */
-#crowdRadioGroup label:nth-child(3) { color: #f1c40f; } /* 普通 */
-#crowdRadioGroup label:nth-child(4) { color: #e67e22; } /* 人は多い */
-#crowdRadioGroup label:nth-child(5) { color: #e74c3c; } /* とても混雑 */
+#crowdRadioGroup label:nth-child(1) { color: #2ecc40; }
+#crowdRadioGroup label:nth-child(2) { color: #27ae60; }
+#crowdRadioGroup label:nth-child(3) { color: #f1c40f; }
+#crowdRadioGroup label:nth-child(4) { color: #e67e22; }
+#crowdRadioGroup label:nth-child(5) { color: #e74c3c; }
 
 /* ========== Submit Button ========== */
 button[type="submit"],
 #submit-btn {
   background-color: #007bff;
   color: white;
-  padding: 12px 20px;
+  padding: 18px 20px;   /* 高さをさらに確保 */
+  min-height: 60px;     /* タップ領域を保証 */
   border: none;
-  border-radius: 4px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 20px;      /* ★ ボタン文字も大きく */
+  font-weight: bold;
   cursor: pointer;
   width: 100%;
   margin-top: 1.5rem;
+  box-sizing: border-box;
 }
 
 button[type="submit"]:hover,

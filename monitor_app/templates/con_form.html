@@ -88,7 +88,7 @@
     <input type="hidden" name="nonce" value="{{ nonce }}">
     <input type="hidden" name="location" id="placeInput">
 
-    <h2>場所を選んでください</h2>
+    <h2>今いる場所はどの企画ですか</h2>
     {% regroup form.fields.location.queryset by floor as floor_list %}
     {% for floor_group in floor_list %}
   <div class="floor-section">
@@ -110,7 +110,7 @@
     </div>
     {% endfor %}
 
-    <h2>混雑度を選んでください</h2>
+    <h2>どのくらい混んでいますか</h2>
     <div id="crowdRadioGroup" style="display:flex; gap:1rem; margin-bottom:1rem;">
       <label><input type="radio" name="congestion_level" value="1" required> 空いている</label>
       <label><input type="radio" name="congestion_level" value="2"> 人は少ない</label>
@@ -119,9 +119,9 @@
       <label><input type="radio" name="congestion_level" value="5"> とても混雑している</label>
     </div>
 
-    <div id="form-error" class="error" style="display:none;">場所を選んでください。</div>
+    <div id="form-error" class="error" style="display:none;">今いる場所はどこの企画ですか</div>
 
-    <button id="submit-btn" type="submit">混雑状況を見る!</button>
+    <button id="submit-btn" type="submit">送信!</button>
   </form>
 
   <script>
