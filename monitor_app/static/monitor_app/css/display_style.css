@@ -111,11 +111,6 @@ a {
   margin-bottom: 8px;
 }
 
-.card-comment {
-  font-size: 0.9em;
-  color: #000000;
-}
-
 /* 色分け */
 .card.low {
   border-left: 6px solid #4CAF50;

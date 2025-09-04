@@ -131,8 +131,7 @@ a {
 }
 
 .card-level,
-.card-data,
-.card-comment {
+.card-data {
   font-size: 0.9em;
   color: #555;
   margin-bottom: 6px;
