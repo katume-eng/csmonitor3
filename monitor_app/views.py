@@ -14,6 +14,7 @@ from .serializers import CongestionLevelItemSerializer, CongestionLevelCreateSer
 from django.contrib.admin.views.decorators import staff_member_required
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_control
+from django.db import transaction
 
 def index(request):
     return render(request, 'index.html')
@@ -83,37 +84,87 @@ def aggregates_data(request):
     """
     Collected を一定時間で集計し CongestionLevel に保存。
     外れ値は MAD で除外してから重み付き平均。
+    データが無い場合は計算せず level=0 として保存。
     """
     valid_time = 15  # minutes
-    cutoff = timezone.now() - timedelta(minutes=valid_time)
+    now = timezone.now()
+    cutoff = now - timedelta(minutes=valid_time)
 
+    # 事前に最近データをまとめて引く
     location_qs = Location.objects.all()
-    collected_recent = Collected.objects.filter(published_at__gte=cutoff).select_related("location")
+    collected_recent = (
+        Collected.objects
+        .filter(published_at__gte=cutoff)
+        .select_related("location")
+    )
 
-    for loc in location_qs:
-        # 該当ロケーションの最近データ
-        samples = list(collected_recent.filter(location=loc).order_by("-published_at"))
-        if not samples:
-            continue
+    # まとめて更新するが、個別に upsert する
+    with transaction.atomic():
+        for loc in location_qs:
+            # 該当ロケーションの最近データ
+            samples = list(
+                collected_recent
+                .filter(location=loc)
+                .order_by("-published_at")
+            )
 
-        # ★ 外れ値除去（中央値+MAD, k=3）
-        samples_robust = _robust_filter_by_mad(samples, k=3)
+            # 1) 最近データが 0 件 → 計算せず level=0 で保存
+            if not samples:
+                CongestionLevel.objects.update_or_create(
+                    location=loc,
+                    defaults={
+                        "level": 0.0,
+                        "reliability": 0,
+                        "last_update_at": now,
+                    },
+                )
+                continue
 
-        num_used = len(samples_robust)
-        if num_used == 0:
-            continue
+            # 2) 外れ値除去（中央値+MAD, k=3）
+            samples_robust = _robust_filter_by_mad(samples, k=3)
+            num_used = len(samples_robust)
 
-        avg = weighted_average_congestion(samples_robust, valid_time_minutes=valid_time)
-        if avg is None:
-            continue
+            # 3) 除外後に 0 件 → 計算せず level=0 で保存
+            if num_used == 0:
+                CongestionLevel.objects.update_or_create(
+                    location=loc,
+                    defaults={
+                        "level": 0.0,
+                        "reliability": 0,
+                        "last_update_at": now,
+                    },
+                )
+                continue
 
-        obj, _ = CongestionLevel.objects.get_or_create(location=loc)
-        obj.level = avg
-        obj.reliability = num_used  # 実際に使った点の数（除外後）
-        obj.last_update_at = timezone.now()
-        obj.save()
+            # 4) 重み付き平均を計算（戻り値 None なら level=0 扱い）
+            avg = weighted_average_congestion(
+                samples_robust,
+                valid_time_minutes=valid_time
+            )
 
-    return render(request, 'aggre.html', {})
+            if avg is None:
+                # 計算不能時も 0 として保存
+                CongestionLevel.objects.update_or_create(
+                    location=loc,
+                    defaults={
+                        "level": 0.0,
+                        "reliability": num_used,
+                        "last_update_at": now,
+                    },
+                )
+                continue
+
+            # 5) 正常計算できたときはその値で保存
+            CongestionLevel.objects.update_or_create(
+                location=loc,
+                defaults={
+                    "level": float(avg),
+                    "reliability": num_used,   # 除外後に使った点の数
+                    "last_update_at": now,
+                },
+            )
+
+    return render(request, "aggre.html", {})
 
 def display(request,floor_given):
     congestion_levels_each_floor = {}
