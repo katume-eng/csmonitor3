@@ -16,9 +16,6 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.cache import cache_control
 from django.db import transaction
 
-def index(request):
-    return render(request, 'index.html')
-
 @staff_member_required
 def make_random_data(request):
     repeat = 100
