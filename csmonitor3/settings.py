@@ -5,12 +5,19 @@ import environ
 env = environ.Env()
 env.read_env('.env')
 
+def env_list(key, default=None, sep=","):
+    raw = os.environ.get(key)
+    if not raw:
+        return default or []
+    return [s.strip() for s in raw.split(sep) if s.strip()]
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=False)
-ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS", "").split(",")
+ALLOWED_HOSTS = [h for h in os.getenv("ALLOWED_HOSTS", "").split(",") if h.strip()]
 
 INSTALLED_APPS = [
+    "corsheaders",
     'monitor_app.apps.MonitorAppConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -23,7 +30,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # ←この行を追加
+    'corsheaders.middleware.CorsMiddleware',            # ← できるだけ上
+    'whitenoise.middleware.WhiteNoiseMiddleware',       # 静的は早めに処理してOK
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -32,9 +40,14 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'csmonitor3.urls'
+# CORS 設定（env から）
+CORS_ALLOWED_ORIGINS = env_list("FRONTEND_ORIGINS", default=["http://localhost:3000"])
+CORS_ALLOW_CREDENTIALS = os.environ.get("CORS_ALLOW_CREDENTIALS", "False").lower() in ("1","true","yes")
 
-CSRF_TRUSTED_ORIGINS = ["https://csmonitor3.onrender.com"]
+# CSRF trust（POST をブラウザから送る場合に必要）
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", default=[])
+
+ROOT_URLCONF = 'csmonitor3.urls'
 
 TEMPLATES = [
     {
