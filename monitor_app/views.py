@@ -64,7 +64,7 @@ def weighted_average_congestion(queryset, valid_time_minutes: int):
         # 分単位の経過時間
         dt_min = (now - c.published_at).total_seconds() / 60.0
         # あなたの元ロジック：1.25乗で減衰、0未満は切り捨て
-        weight = max(0.0, valid_time_minutes - (dt_min ** 1.25)) / valid_time_minutes
+        weight = max(0.0, valid_time_minutes - (dt_min ** 1.12)) / valid_time_minutes
         if weight <= 0:
             continue
         weighted_sum += c.congestion_level * weight
