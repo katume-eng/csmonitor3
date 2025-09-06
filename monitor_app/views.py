@@ -83,7 +83,7 @@ def aggregates_data(request):
     外れ値は MAD で除外してから重み付き平均。
     データが無い場合は計算せず level=0 として保存。
     """
-    valid_time = 15  # minutes
+    valid_time = 25  # minutes
     now = timezone.now()
     cutoff = now - timedelta(minutes=valid_time)
 
