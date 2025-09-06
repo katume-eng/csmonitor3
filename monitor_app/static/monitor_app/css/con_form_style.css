@@ -17,7 +17,7 @@ h1 {
   margin: 20px 0 30px;
   font-size: 2rem;      /* 約36px */
 }
-h2 {
+h2,h3 {
   margin: 16px 0;
   text-align: center;
   font-size: 1.5rem;    /* 約27px */
@@ -188,4 +188,10 @@ button[type="submit"]:hover,
 button[disabled] {
   opacity: .6;
   pointer-events: none;
+}
+
+body::after {
+  content: "";
+  display: block;
+  height: 200px; /* 必要な余白量に調整 */
 }

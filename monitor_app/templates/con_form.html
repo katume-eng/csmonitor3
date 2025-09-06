@@ -89,6 +89,7 @@
     <input type="hidden" name="location" id="placeInput">
 
     <h2>今いる場所はどの企画ですか</h2>
+    <h3>下へスクロール!!</h3>
     {% regroup form.fields.location.queryset by floor as floor_list %}
     {% for floor_group in floor_list %}
   <div class="floor-section">
@@ -122,6 +123,8 @@
     <div id="form-error" class="error" style="display:none;">今いる場所はどこの企画ですか</div>
 
     <button id="submit-btn" type="submit">送信!</button>
+      <!-- ↓このダミー余白を最後に置く -->
+    <div style="height: 200px;"></div>
   </form>
 
   <script>
