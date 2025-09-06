@@ -166,3 +166,51 @@ a {
   margin: 20px auto;           /* 周囲に余白 */
   max-width: 600px;            /* 横幅を制御して読みやすく */
 }
+
+/* 固定QRフッター */
+.qr-fixed-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(255, 255, 255, 0.96);
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  z-index: 1000;
+}
+
+.qr-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 320px;
+}
+
+.qr-img {
+  width: 150px;
+  height: auto;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.qr-text {
+  font-size: 14px;
+  color: #222;
+}
+.qr-text .qr-title {
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.qr-text .qr-sub {
+  font-size: 12px;
+  color: #555;
+}
+
+@media (max-width: 560px) {
+  .qr-img { width: 56px; }
+  .qr-text .qr-title { font-size: 13px; }
+  .qr-text .qr-sub { font-size: 11px; }
+}

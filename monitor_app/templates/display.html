@@ -18,6 +18,16 @@
   <h3 class="caution">すべての企画ではありません</h3>
   <div class="content" id="congestion-content">
   </div>
+    <!-- 固定QRフッター -->
+  <div class="qr-fixed-footer">
+    <div class="qr-box">
+      <img src="{% static 'monitor_app/img/qr.png' %}" alt="参加登録QRコード" class="qr-img">
+      <div class="qr-text">
+        <div class="qr-title">ここからチェック!</div>
+        <div class="qr-sub">QRを読み取ってアクセス</div>
+      </div>
+    </div>
+  </div>
 <script>
   // 描画が完全に落ち着いてから実行（rAF×2）
   const afterPaint = (cb) => requestAnimationFrame(()=>requestAnimationFrame(cb));
